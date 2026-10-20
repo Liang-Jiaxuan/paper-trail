@@ -1,0 +1,46 @@
+# ===== 密钥与本地配置 =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# ===== 虚拟环境（使用conda时通常不在项目内，保留以防万一）=====
+.venv/
+venv/
+
+# ===== 编辑器与系统 =====
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# ===== 论文原文（版权原因，不提交；通过manifest+下载脚本重建）=====
+data/raw_pdf/
+*.pdf
+
+# ===== 可重新生成的中间产物 =====
+data/parsed/
+data/chunks/
+data/assets/
+vectorstore/
+
+# ===== 模型权重 =====
+models/
+*.bin
+*.safetensors
+*.onnx
+
+# ===== 日志 =====
+logs/
+*.log
