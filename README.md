@@ -8,7 +8,7 @@
 
 ## 当前状态
 
-早期阶段。目前只有包结构和论文清单的格式，PDF 解析、检索和问答都还没有实现。
+早期阶段。论文清单和 PyMuPDF 抽查页导出已经有了。检索和问答还没有实现。抽查页怎么导出见 [docs/PARSING.md](docs/PARSING.md)。
 
 ## 计划
 
@@ -30,4 +30,4 @@ $env:PYTHONPATH = "src"
 python -m unittest discover -s tests
 ```
 
-设计决策见 [docs/DECISIONS.md](docs/DECISIONS.md)。
+设计决策见 [docs/DECISIONS.md](docs/DECISIONS.md)。解析行为见 [docs/PARSING.md](docs/PARSING.md)。

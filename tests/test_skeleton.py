@@ -36,6 +36,8 @@ class SkeletonTest(unittest.TestCase):
         self.assertEqual(paper_trail.__version__, "0.0.0")
         self.assertTrue((config.PROJECT_ROOT / "pyproject.toml").is_file())
         self.assertEqual(config.MANIFEST_PATH, config.DATA_DIR / "manifest.json")
+        self.assertEqual(config.RAW_PDF_DIR, config.DATA_DIR / "raw_pdf")
+        self.assertEqual(config.PARSED_DIR, config.DATA_DIR / "parsed")
         self.assertTrue(config.MANIFEST_PATH.is_file())
 
 

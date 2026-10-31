@@ -1,5 +1,7 @@
 # 设计决策
 
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)。
+
 ## 语料主题
 
 第一批论文选 LLM 训练与推理系统，分成 `llm-systems/training` 和 `llm-systems/inference` 两个标签。
@@ -34,11 +36,11 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 - 包名 `paper_trail`，`src` 布局。
 - conda 环境 `paper-trail`，Python 3.12，见 `environment.yml`。
-- 依赖随阶段加入 `pyproject.toml`，现在为空。
+- 依赖随阶段加入 `pyproject.toml`。当前是 `pymupdf`。
 
 ## 实现约束
 
-解析：
+解析的当前行为见 [PARSING.md](PARSING.md)。下面这些约束还没有做完：
 
 - 表格区域从正文中排除，表格内容只入库一次。
 - 章节、页眉页脚的识别规则针对英文论文设计。
