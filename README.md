@@ -8,7 +8,7 @@
 
 ## 当前状态
 
-早期阶段。论文清单和 PyMuPDF 抽查页导出已经有了。检索和问答还没有实现。抽查页怎么导出见 [docs/PARSING.md](docs/PARSING.md)。
+早期阶段。论文清单和 PyMuPDF 抽查页导出已经有了。其中 4 页已对照 PDF，结论见 [docs/PARSING.md](docs/PARSING.md)。检索和问答还没有实现。
 
 ## 计划
 

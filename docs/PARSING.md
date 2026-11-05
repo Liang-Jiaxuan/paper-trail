@@ -125,6 +125,17 @@ PyMuPDF 写到 `data/parsed/pymupdf/<paper_id>/`。每个页有 `page-002.json` 
 
 PyMuPDF 给出的表格框写在 `tables` 里。面积有至少 30% 落在某个表格框内的文本块保留原文，并设 `overlaps_table` 为 true。表格找失败时，`table_error` 记下原因，这一页的文本块仍然导出。
 
+## 抽检
+
+2026-11-05 对照了 4 页 PDF 和对应的 txt。其余抽查页没有看，不能据此说全部导出正确。
+
+| 页 | 结果 |
+|---|---|
+| Megatron-LM 第 2 页 | 正文先左栏后右栏，与 PDF 一致。页眉标为 `header`。Figure 1 只有图注，没有图块。 |
+| Megatron-LM 第 6 页 | 正文顺序一致。Table 1 标了 `overlaps_table`，格子按从左到右排，行和列对不齐。文件末尾的 `tables` 只记了框和 `2x6`。Figure 5 里的文字和数字被抽成正文，没有 `image`。 |
+| GPipe 第 2 页 | 切分和顺序与 PDF 一致。图表上的文字没有被抽出来。 |
+| Medusa 第 2 页 | `[6]` 到 `[22]` 是图里的文字，被抽成正文，没有 `image`。脚注角标 `1` 变成普通数字，粘在 `dataset1` 和 `1Upon` 上。脚注正文仍在，阅读顺序没有因此打乱。 |
+
 ## 还没做
 
 - 把表格文字从正文里拿掉，只留一份表格内容。
