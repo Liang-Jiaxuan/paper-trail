@@ -1,6 +1,8 @@
 # 解析
 
-当前只导出抽查页，用来检查阅读顺序。PyMuPDF 和 MinerU 各写一份。还没有解析全文。
+导出用 MinerU。每篇论文写成一份 middle JSON，外层加上清单里的 `paper_id` 和 `sha256`。块的类型、层级、父子关系和行内样式按 MinerU 的结果保存。
+
+2026-11-05 用扁平化结果对照过 4 页，才选定 MinerU。那 4 页的结论在下面的「抽检」。当前这套文件还没有逐页对照 PDF。
 
 ## 运行
 
@@ -9,130 +11,83 @@
 ```powershell
 pip install -e .
 python -m paper_trail.parsing
-python -m paper_trail.parsing mineru
 ```
 
-`python -m paper_trail.parsing` 不带参数，只导出 PyMuPDF，结果在 `data/parsed/pymupdf/`。`python -m paper_trail.parsing mineru` 导出 MinerU，档位是 `standard`，模型用本机 MinerU 配置里的目录，结果在 `data/parsed/mineru/`。
+这条命令导出清单里 `status` 为 `selected` 的论文，也就是 B0 那 6 篇的全部页。档位是 `standard`，模型用本机 MinerU 配置里的目录。结果在 `data/parsed/mineru/<paper_id>.json`，另有一份 `index.json`。`data/parsed/` 不提交。
 
-程序读取 `data/manifest.json`，用 `sha256` 到 `data/raw_pdf/` 匹配 PDF，再导出下面这些页。页码从 1 开始。
-
-| paper_id | 页 |
-|---|---|
-| shoeybi-megatron-lm | 2、6 |
-| kwon-pagedattention | 2、5 |
-| huang-gpipe | 2、3、4 |
-| rajbhandari-zero | 2 |
-| cai-medusa | 2、7 |
-| xiao-smoothquant | 2 |
+程序用 `sha256` 到 `data/raw_pdf/` 匹配 PDF，不靠文件名。2026-11-05 这 6 篇的页数是：GPipe 10，Megatron-LM 15，ZeRO 24，PagedAttention 16，SmoothQuant 13，Medusa 27。
 
 ## 核心流程
 
 ```mermaid
 flowchart TD
-  start[读取清单和抽查页] --> ids{paper_id 都在清单中}
-  ids -->|否| err[报错并且不写文件]
-  ids -->|是| match[按 sha256 匹配 PDF]
+  start[读取清单里 status 为 selected 的论文] --> match[按 sha256 匹配 PDF]
   match --> files{每篇都找到且哈希不重复}
-  files -->|否| err
-  files -->|是| extract[逐页抽出文本块、图片块和表格框]
-  extract --> order[按坐标排阅读顺序并标记表格重叠]
-  order --> page[写出该页的 JSON 和 txt]
-  page --> index[写出 index.json]
+  files -->|否| err[报错并且不写文件]
+  files -->|是| drop[删掉旧 index.json]
+  drop --> parse[MinerU 解析整篇]
+  parse --> wrap[外包 paper_id 和 sha256]
+  wrap --> paper[写出 paper_id.json]
+  paper --> index[写出 index.json]
 ```
 
 ## 数据流
 
-清单和抽查页先合成论文记录。论文记录配上 PDF 得到每一页的文档，再写成页文件。`index.json` 只来自论文记录，不经过页内的块。
-
 ```mermaid
 flowchart TB
-  manifest["manifest.json"] --> papers["论文记录"]
-  spot["抽查页"] --> papers
+  manifest["manifest.json"] --> papers["selected 论文"]
   papers --> index["index.json"]
   raw["data/raw_pdf"] --> pdf["匹配后的 PDF"]
   papers --> pdf
-  pdf --> doc["一页文档"]
-  doc --> pages["page-NNN.json 与 txt"]
+  pdf --> middle["MinerU middle JSON"]
+  papers --> middle
+  middle --> file["paper_id.json"]
 ```
 
-## 输出位置
+## 一篇的 JSON
 
-PyMuPDF 写到 `data/parsed/pymupdf/<paper_id>/`。每个页有 `page-002.json` 和同名 `.txt`。目录名里的页码是三位。`index.json` 记录这次导出了哪些论文和页。
-
-MinerU 写到 `data/parsed/mineru/<paper_id>/`。两份结果的 JSON 字段相同，用 `parser` 区分，取值是 `pymupdf` 或 `mineru`。`data/parsed/` 不提交。
-
-## 一页的 JSON
-
-`page-002.json` 是这一页的完整结果。`page-002.txt` 是同一份内容的可读文本，不另定字段。下面是缩短后的一页，坐标和文字只作格式示例：
+`huang-gpipe.json` 的外层是这份导出自己的字段，`middle` 是 MinerU 的 middle JSON，块没有重排，也没有收成统一的 `text` / `image`。下面只写出外层和第 2 页的一个块，块取自 2026-11-05 的导出，其余字段省略：
 
 ```json
 {
-  "dump_version": 1,
-  "parser": "pymupdf",
-  "paper_id": "shoeybi-megatron-lm",
+  "dump_version": 2,
+  "parser": "mineru",
+  "paper_id": "huang-gpipe",
   "sha256": "清单中该文件的 sha256",
-  "source_name": "1909.08053v4.pdf",
-  "page": 2,
-  "page_width": 612.0,
-  "page_height": 792.0,
-  "blocks": [
-    {
-      "reading_order": 0,
-      "column": "left",
-      "region": "body",
-      "bbox": [55.0, 100.0, 290.0, 130.0],
-      "text": "这一块的文字",
-      "kind": "text",
-      "overlaps_table": false
-    }
-  ],
-  "tables": [
-    { "bbox": [311.6, 100.2, 560.0, 180.0], "rows": 2, "cols": 6 }
-  ],
-  "table_error": null
+  "source_name": "NeurIPS-2019-gpipe-....pdf",
+  "middle": {
+    "schema": "docvortex.middle",
+    "pages": [
+      {
+        "page_idx": 1,
+        "blocks": [
+          {
+            "type": "paragraph_title",
+            "index": 5,
+            "bbox": [0.173, 0.725, 0.368, 0.744],
+            "content": [{"type": "text", "content": "2 The GPipe Library"}],
+            "level": 2
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
-`blocks` 已按阅读顺序排列，`reading_order` 从 0 递增。`column` 取 `left`、`right` 或 `full`。`region` 取 `body`、`header` 或 `footer`。`bbox` 是 `[x0, y0, x1, y1]`，单位是点，保留一位小数。`kind` 取 `text` 或 `image`；图片块的 `text` 为空。`overlaps_table` 为 true 表示该块至少有 30% 的面积落在某个表格框内，原文仍保留。
+`page_idx` 从 0 开始，是原 PDF 的页号。`index.json` 里的 `pages` 写成从 1 开始，所以上面这一页在索引里是 `2`。`bbox` 是相对页宽、页高的 0–1 坐标，原点在左上，y 向下。每页的宽和高（单位是点）在 `middle.extensions.docvortex_layout.pages`，B0 这 6 篇都是 612×792。MinerU 的版本和档位在 `middle.metadata.producer` 与 `middle.extensions.mineru`。
 
-`tables` 是本页找到的表格框。没找到时为空数组。找表格失败时，`table_error` 是错误文字，`blocks` 仍然导出。
+块类型留着 MinerU 的名字，例如 `paragraph_title`、`header`、`footer`、`page_footnote`、`equation`、`image`、`chart`、`table`。标题带 `level`。MinerU 认出图注时，`image_caption`、`table_caption` 放在父块的 `content` 里。它没认出时，图注是单独的 `text` 块：GPipe 第 2 页 Figure 1 的图注就是 `index` 为 0 的 `text`，两张图是后面的两个 `chart`。行内公式是 `equation_inline`，脚注标记也可能写成这种公式，例如 `^{1}`。
 
-MinerU 的框先是相对页宽、页高的 0–1 坐标，原点在左上，y 向下，写入前乘成点。图片块没有文字时 `text` 为空；模型若在图片块里给出文字，原样写入。表格正文保留 HTML。行数是 `tr` 的个数，列数是最宽一行的单元格数，`colspan` 算进这一行。HTML 里没有可数的行时，框仍在，`rows` 和 `cols` 为 0，原因写在 `table_error`。MinerU 自己的标题、页眉类型不另开字段。
+文件按 MinerU 的写法省略默认值。空的 `styles`、为空的 `continues_prev` 不写。读的时候缺字段按默认值处理，也可以用 `mineru.parser.base.ParseResult.from_dict(document["middle"])` 读回成带类型的对象。6 篇都能这样读回。
 
-`index.json` 只记录这次导出了哪些页：
+PDF 的 `image_base64` 不写入。这也是 MinerU 自己写 middle JSON 时的约定。图片块仍保留类型、框和文字。
 
-```json
-{
-  "dump_version": 1,
-  "parser": "pymupdf",
-  "papers": [
-    {
-      "paper_id": "shoeybi-megatron-lm",
-      "sha256": "清单中该文件的 sha256",
-      "source_name": "1909.08053v4.pdf",
-      "pages": [2, 6]
-    }
-  ]
-}
-```
-
-## 阅读顺序
-
-每个文本块或图片块有矩形坐标。按页宽把它分成三栏：
-
-- 块同时跨过页面左侧 35% 和右侧 65%，或者宽度达到页宽的 60%，算通栏。
-- 其余块的左边缘不小于页宽的 42%，算右栏。
-- 剩下的算左栏。
-
-通栏块按自上而下的位置把页面切开。每一段里先排左栏，再排右栏，然后才是这段下方的通栏块。上边缘 `y0` 和某个通栏块相同的栏内块，排在该通栏块之后。
-
-页眉、页脚只做标记，不从结果里删除。判定边距是 54 点。贯穿整页的块仍标为正文。
-
-PyMuPDF 给出的表格框写在 `tables` 里。MinerU 用表格正文的框。面积有至少 30% 落在某个表格框内的文本块保留原文，并设 `overlaps_table` 为 true。表格找失败时，`table_error` 记下原因，这一页的文本块仍然导出。
+`index.json` 记录这次导出了哪些论文和页码。导出开始时先删掉旧的 `index.json`，最后一篇写完才写新的。没有 `index.json` 说明上次导出没有跑完，目录里可能是新旧混合的文件。后面读结果时从 `index.json` 列出的论文开始，不要按目录里有什么文件来读。
 
 ## 抽检
 
-2026-11-05，PyMuPDF 和 MinerU 各对照了 B0 那 6 篇论文里抽检的 4 页。其余抽查页没有看，不能据此说全部导出正确。
+2026-11-05，PyMuPDF 和 MinerU 各对照了 B0 那 6 篇论文里抽检的 4 页。当时看的是扁平化之后的 txt：MinerU 的类型被收成 `text` 或 `image`，阅读顺序按坐标重算。其余页没有看。下面两张表只描述那次对照，不描述现在这份 middle JSON。
 
 PyMuPDF：
 
@@ -143,7 +98,7 @@ PyMuPDF：
 | GPipe 第 2 页 | 切分和顺序与 PDF 一致。图表上的文字没有被抽出来。 |
 | Medusa 第 2 页 | `[6]` 到 `[22]` 是图里的文字，被抽成正文，没有 `image`。脚注角标 `1` 变成普通数字，粘在 `dataset1` 和 `1Upon` 上。脚注正文仍在，阅读顺序没有因此打乱。 |
 
-MinerU：
+MinerU 的扁平化结果：
 
 | 页 | 结果 |
 |---|---|
@@ -152,10 +107,9 @@ MinerU：
 | GPipe 第 2 页 | 顺序与 PDF 一致。图被标成 `image`。正文下标写成 `L_{i}`、`p_{k}` 这种形式。 |
 | Medusa 第 2 页 | 顺序与 PDF 一致。图是 `image`。脚注角标 `1` 仍粘在 `dataset1` 上，脚注正文仍是 `1Upon`。 |
 
-这 4 页里，图块、表格 HTML 和下标是 MinerU 留下的。后面的分块读 MinerU 的导出，PyMuPDF 的结果保留作对照。脚注上标两家都仍会粘在单词上。这个选择只依据这 4 页，其余抽查页还没有对照。
+这 4 页的扁平化结果里，图块、表格 HTML 和下标是 MinerU 留下的，所以选定 MinerU。PyMuPDF 导出和按坐标重排的代码已从当前源码移除。扁平化会丢掉上标样式，所以当时写成了 `dataset1`。现在这份 `cai-medusa.json` 里，第 2 页（`page_idx` 为 1）的脚注标记是单独的 `equation_inline`，内容是 `^{1}`，脚注块也以 `^{1}` 开头。这一页没有再对 PDF。
 
 ## 还没做
 
-- 把表格文字从正文里拿掉，只留一份表格内容。
-- 图注和图片绑定，公式、参考文献与正文分开。
-- 脚注上标仍会粘在相邻单词上。MinerU 在 Medusa 第 2 页仍写出 `dataset1`。
+- 用现在这份 middle JSON 再对照 PDF。上面 4 页的结论不能直接套到新文件上。
+- 分块还没有读这些块。表格正文仍在 `table_body` 里，图注仍在图片块下面，公式仍是 `equation` 或 `equation_inline`。

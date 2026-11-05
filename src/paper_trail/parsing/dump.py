@@ -1,12 +1,12 @@
-"""把一页的块写成 JSON 和可读文本。目录按解析器分开。"""
+"""按 sha256 核对 PDF，并把 MinerU 的 middle JSON 写成一篇一个文件。"""
 
 import hashlib
 import json
+import shutil
 from pathlib import Path
 
-from paper_trail.parsing.order import PlacedBlock, overlaps_bbox, order_blocks
-
-DUMP_VERSION = 1
+DUMP_VERSION = 2
+PARSER_NAME = "mineru"
 
 
 class PdfMatchError(Exception):
@@ -46,109 +46,52 @@ def locate_pdfs(papers: list[dict], raw_dir: Path) -> dict[str, Path]:
     return found
 
 
-def papers_for_pages(manifest: dict, pages_by_paper: dict[str, list[int]]) -> list[dict]:
-    """从清单里取出要导出的论文。"""
-    wanted = set(pages_by_paper)
-    papers = [paper for paper in manifest["papers"] if paper["paper_id"] in wanted]
-    unknown = wanted - {paper["paper_id"] for paper in papers}
-    if unknown:
-        raise PdfMatchError("清单里没有这些 paper_id：" + ", ".join(sorted(unknown)))
-    return papers
+def selected_papers(manifest: dict) -> list[dict]:
+    """按清单顺序取出 status 为 selected 的论文。"""
+    return [paper for paper in manifest["papers"] if paper.get("status") == "selected"]
 
 
-def build_document(
-    *,
-    parser: str,
-    paper_id: str,
-    sha256: str,
-    source_name: str,
-    page: int,
-    page_width: float,
-    page_height: float,
-    placed: list[PlacedBlock],
-    tables: list[dict],
-    table_error: str | None,
-) -> dict:
-    """组装一页的导出文档。表格内的文字保留，并标记 overlaps_table。"""
-    ordered = order_blocks(placed, page_width, page_height)
-    blocks = []
-    for item in ordered:
-        block = item.block
-        blocks.append(
-            {
-                "reading_order": item.reading_order,
-                "column": item.column,
-                "region": item.region,
-                "bbox": [
-                    round(block.x0, 1),
-                    round(block.y0, 1),
-                    round(block.x1, 1),
-                    round(block.y1, 1),
-                ],
-                "text": block.text,
-                "kind": block.kind,
-                "overlaps_table": any(
-                    overlaps_bbox(block, table["bbox"]) for table in tables
-                ),
-            }
-        )
+def page_numbers(middle: dict) -> list[int]:
+    """middle 里的 page_idx 从 0 开始，这里改成从 1 开始的页码。"""
+    return [int(page["page_idx"]) + 1 for page in middle["pages"]]
+
+
+def wrap_middle(paper: dict, source_name: str, middle: dict) -> dict:
+    """在 MinerU 的 middle JSON 外包上清单身份。不改 middle 里的块。"""
     return {
         "dump_version": DUMP_VERSION,
-        "parser": parser,
-        "paper_id": paper_id,
-        "sha256": sha256,
+        "parser": PARSER_NAME,
+        "paper_id": paper["paper_id"],
+        "sha256": paper["sha256"],
         "source_name": source_name,
-        "page": page,
-        "page_width": round(page_width, 1),
-        "page_height": round(page_height, 1),
-        "blocks": blocks,
-        "tables": tables,
-        "table_error": table_error,
+        "middle": middle,
     }
 
 
-def render_page_text(document: dict) -> str:
-    """把一页文档写成便于对照 PDF 的文本。"""
-    lines = [
-        f"parser: {document['parser']}",
-        f"paper_id: {document['paper_id']}",
-        f"page: {document['page']}",
-        f"sha256: {document['sha256']}",
-        "",
-    ]
-    for block in document["blocks"]:
-        flags = [block["column"], block["region"]]
-        if block["kind"] != "text":
-            flags.append(block["kind"])
-        if block["overlaps_table"]:
-            flags.append("overlaps_table")
-        bbox = ", ".join(f"{value:.1f}" for value in block["bbox"])
-        lines.append(f"[{block['reading_order']}] {' '.join(flags)} ({bbox})")
-        if block["text"]:
-            lines.append(block["text"])
-        lines.append("")
-    if document["tables"]:
-        lines.append("tables:")
-        for table in document["tables"]:
-            bbox = ", ".join(f"{value:.1f}" for value in table["bbox"])
-            lines.append(f"- ({bbox}) {table['rows']}x{table['cols']}")
-        lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
+def clear_paper_dir(parsed_dir: Path, paper_id: str) -> None:
+    """删掉旧的按页目录。同名路径要写成整篇 JSON，目录还在时写不进去。"""
+    folder = parsed_dir / PARSER_NAME / paper_id
+    if folder.is_dir():
+        shutil.rmtree(folder)
 
 
-def write_page_dump(parsed_dir: Path, document: dict) -> tuple[Path, Path]:
-    """写入 data/parsed/<parser>/<paper_id>/page-NNN.json 和同名 txt。"""
-    folder = parsed_dir / document["parser"] / document["paper_id"]
+def write_paper_dump(parsed_dir: Path, document: dict) -> Path:
+    """写入 data/parsed/mineru/<paper_id>.json。"""
+    folder = parsed_dir / PARSER_NAME
     folder.mkdir(parents=True, exist_ok=True)
-    stem = f"page-{document['page']:03d}"
-    json_path = folder / f"{stem}.json"
-    text_path = folder / f"{stem}.txt"
-    json_path.write_text(
+    path = folder / f"{document['paper_id']}.json"
+    path.write_text(
         json.dumps(document, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    text_path.write_text(render_page_text(document), encoding="utf-8")
-    return json_path, text_path
+    return path
+
+
+def remove_index(parsed_dir: Path, parser: str) -> None:
+    """导出开始前删掉旧索引。中途失败时没有 index.json，读者不会拿到新旧混合的结果。"""
+    path = parsed_dir / parser / "index.json"
+    if path.exists():
+        path.unlink()
 
 
 def write_index(parsed_dir: Path, parser: str, entries: list[dict]) -> Path:
