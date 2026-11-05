@@ -32,11 +32,15 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 输出的 `Hash` 与清单里的 `sha256` 相同，就是同一份文件。大小写不用区分。
 
+## 分块用 MinerU，PyMuPDF 留作对照
+
+用 B0 那 6 篇论文里抽检的 4 页对照了 PyMuPDF 和 MinerU，记录在 [PARSING.md](PARSING.md)。这 4 页上，MinerU 留下了图块、表格 HTML 和下标，阅读顺序也与 PDF 一致。后面的分块读 `data/parsed/mineru/`。PyMuPDF 的导出留下作对照。脚注上标两家都会粘在相邻单词上，这次不处理。这个选择只依据这 4 页，其余抽查页还没有对照。
+
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
 - conda 环境 `paper-trail`，Python 3.12，见 `environment.yml`。
-- 依赖随阶段加入 `pyproject.toml`。当前是 `pymupdf`。
+- 依赖随阶段加入 `pyproject.toml`。当前是 `pymupdf` 和 `mineru`。
 
 ## 实现约束
 

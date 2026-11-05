@@ -1,4 +1,4 @@
-"""用 PyMuPDF 导出指定页。MinerU 以后写入旁边的 mineru 目录。"""
+"""用 PyMuPDF 导出指定页。MinerU 写入旁边的 mineru 目录。"""
 
 import pymupdf
 

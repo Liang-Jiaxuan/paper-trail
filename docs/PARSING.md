@@ -1,15 +1,18 @@
 # 解析
 
-当前只导出抽查页，用来检查阅读顺序。还没有解析全文，也没有接入 MinerU。
+当前只导出抽查页，用来检查阅读顺序。PyMuPDF 和 MinerU 各写一份。还没有解析全文。
 
 ## 运行
 
-在已激活的 `paper-trail` 环境里，于仓库根目录执行。第一次运行前先安装本包和 PyMuPDF：
+在已激活的 `paper-trail` 环境里，于仓库根目录执行。第一次运行前先安装本包：
 
 ```powershell
 pip install -e .
 python -m paper_trail.parsing
+python -m paper_trail.parsing mineru
 ```
+
+`python -m paper_trail.parsing` 不带参数，只导出 PyMuPDF，结果在 `data/parsed/pymupdf/`。`python -m paper_trail.parsing mineru` 导出 MinerU，档位是 `standard`，模型用本机 MinerU 配置里的目录，结果在 `data/parsed/mineru/`。
 
 程序读取 `data/manifest.json`，用 `sha256` 到 `data/raw_pdf/` 匹配 PDF，再导出下面这些页。页码从 1 开始。
 
@@ -56,7 +59,7 @@ flowchart TB
 
 PyMuPDF 写到 `data/parsed/pymupdf/<paper_id>/`。每个页有 `page-002.json` 和同名 `.txt`。目录名里的页码是三位。`index.json` 记录这次导出了哪些论文和页。
 
-以后 MinerU 写到 `data/parsed/mineru/<paper_id>/`。两份结果的 JSON 字段相同，用 `parser` 区分，取值是 `pymupdf` 或 `mineru`。`data/parsed/` 不提交。
+MinerU 写到 `data/parsed/mineru/<paper_id>/`。两份结果的 JSON 字段相同，用 `parser` 区分，取值是 `pymupdf` 或 `mineru`。`data/parsed/` 不提交。
 
 ## 一页的 JSON
 
@@ -94,6 +97,8 @@ PyMuPDF 写到 `data/parsed/pymupdf/<paper_id>/`。每个页有 `page-002.json` 
 
 `tables` 是本页找到的表格框。没找到时为空数组。找表格失败时，`table_error` 是错误文字，`blocks` 仍然导出。
 
+MinerU 的框先是相对页宽、页高的 0–1 坐标，原点在左上，y 向下，写入前乘成点。图片块没有文字时 `text` 为空；模型若在图片块里给出文字，原样写入。表格正文保留 HTML。行数是 `tr` 的个数，列数是最宽一行的单元格数，`colspan` 算进这一行。HTML 里没有可数的行时，框仍在，`rows` 和 `cols` 为 0，原因写在 `table_error`。MinerU 自己的标题、页眉类型不另开字段。
+
 `index.json` 只记录这次导出了哪些页：
 
 ```json
@@ -123,11 +128,13 @@ PyMuPDF 写到 `data/parsed/pymupdf/<paper_id>/`。每个页有 `page-002.json` 
 
 页眉、页脚只做标记，不从结果里删除。判定边距是 54 点。贯穿整页的块仍标为正文。
 
-PyMuPDF 给出的表格框写在 `tables` 里。面积有至少 30% 落在某个表格框内的文本块保留原文，并设 `overlaps_table` 为 true。表格找失败时，`table_error` 记下原因，这一页的文本块仍然导出。
+PyMuPDF 给出的表格框写在 `tables` 里。MinerU 用表格正文的框。面积有至少 30% 落在某个表格框内的文本块保留原文，并设 `overlaps_table` 为 true。表格找失败时，`table_error` 记下原因，这一页的文本块仍然导出。
 
 ## 抽检
 
-2026-11-05 对照了 4 页 PDF 和对应的 txt。其余抽查页没有看，不能据此说全部导出正确。
+2026-11-05，PyMuPDF 和 MinerU 各对照了 B0 那 6 篇论文里抽检的 4 页。其余抽查页没有看，不能据此说全部导出正确。
+
+PyMuPDF：
 
 | 页 | 结果 |
 |---|---|
@@ -136,8 +143,19 @@ PyMuPDF 给出的表格框写在 `tables` 里。面积有至少 30% 落在某个
 | GPipe 第 2 页 | 切分和顺序与 PDF 一致。图表上的文字没有被抽出来。 |
 | Medusa 第 2 页 | `[6]` 到 `[22]` 是图里的文字，被抽成正文，没有 `image`。脚注角标 `1` 变成普通数字，粘在 `dataset1` 和 `1Upon` 上。脚注正文仍在，阅读顺序没有因此打乱。 |
 
+MinerU：
+
+| 页 | 结果 |
+|---|---|
+| Megatron-LM 第 2 页 | 顺序与 PDF 一致。Figure 1 是 `image`，图注是一整句。 |
+| Megatron-LM 第 6 页 | 顺序与 PDF 一致。Figure 5 是 `image`，图注是一整句。Table 1 保留 HTML，行列还在，`tables` 记为 `5x6`。 |
+| GPipe 第 2 页 | 顺序与 PDF 一致。图被标成 `image`。正文下标写成 `L_{i}`、`p_{k}` 这种形式。 |
+| Medusa 第 2 页 | 顺序与 PDF 一致。图是 `image`。脚注角标 `1` 仍粘在 `dataset1` 上，脚注正文仍是 `1Upon`。 |
+
+这 4 页里，图块、表格 HTML 和下标是 MinerU 留下的。后面的分块读 MinerU 的导出，PyMuPDF 的结果保留作对照。脚注上标两家都仍会粘在单词上。这个选择只依据这 4 页，其余抽查页还没有对照。
+
 ## 还没做
 
 - 把表格文字从正文里拿掉，只留一份表格内容。
 - 图注和图片绑定，公式、参考文献与正文分开。
-- 用 MinerU 对同样的页再导出一份。
+- 脚注上标仍会粘在相邻单词上。MinerU 在 Medusa 第 2 页仍写出 `dataset1`。
