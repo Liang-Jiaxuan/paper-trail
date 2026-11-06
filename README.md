@@ -8,7 +8,7 @@
 
 ## 当前状态
 
-早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。后面的分块读这份 middle JSON。检索和问答还没有实现。
+早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页。2026-11-06 用这份 middle JSON 又对照了这 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。后面的分块读这份 middle JSON。检索和问答还没有实现。
 
 ## 计划
 

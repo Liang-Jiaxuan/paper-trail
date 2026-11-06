@@ -34,7 +34,7 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 ## 分块读 MinerU 的 middle JSON
 
-用 B0 那 6 篇论文里抽检的 4 页对照了 PyMuPDF 和 MinerU，记录在 [PARSING.md](PARSING.md)。这 4 页的扁平化结果里，MinerU 留下了图块、表格 HTML 和下标，阅读顺序也与 PDF 一致。这个选择只依据这 4 页。
+用 B0 那 6 篇论文里抽检的 4 页对照了 PyMuPDF 和 MinerU，记录在 [PARSING.md](PARSING.md)。这 4 页的扁平化结果里，MinerU 留下了图块、表格 HTML 和下标，阅读顺序也与 PDF 一致。2026-11-06 用现在的 middle JSON 又对照了这 4 页，顺序和内容与 PDF 一致，标题、图注、表和上下标都留着。作者肩标 `2` 没有 `superscript`，小节标题的 `level` 都是 2。这个选择只依据这 4 页。
 
 后面的分块读 `data/parsed/mineru/<paper_id>.json`。`middle` 是 MinerU 的 middle JSON，外层加上 `paper_id` 和 `sha256`。块的类型、层级和行内样式按 MinerU 的原样保留。PyMuPDF 导出和按坐标重排的代码已从当前源码移除，对照结论留在 PARSING.md。
 

@@ -2,7 +2,7 @@
 
 导出用 MinerU。每篇论文写成一份 middle JSON，外层加上清单里的 `paper_id` 和 `sha256`。块的类型、层级、父子关系和行内样式按 MinerU 的结果保存。
 
-2026-11-05 用扁平化结果对照过 4 页，才选定 MinerU。那 4 页的结论在下面的「抽检」。当前这套文件还没有逐页对照 PDF。
+2026-11-06 用现在这份 middle JSON 对照了同样的 4 页，顺序和内容与 PDF 一致。其余页没有看。结论在下面的「抽检」。
 
 ## 运行
 
@@ -107,9 +107,16 @@ MinerU 的扁平化结果：
 | GPipe 第 2 页 | 顺序与 PDF 一致。图被标成 `image`。正文下标写成 `L_{i}`、`p_{k}` 这种形式。 |
 | Medusa 第 2 页 | 顺序与 PDF 一致。图是 `image`。脚注角标 `1` 仍粘在 `dataset1` 上，脚注正文仍是 `1Upon`。 |
 
-这 4 页的扁平化结果里，图块、表格 HTML 和下标是 MinerU 留下的，所以选定 MinerU。PyMuPDF 导出和按坐标重排的代码已从当前源码移除。扁平化会丢掉上标样式，所以当时写成了 `dataset1`。现在这份 `cai-medusa.json` 里，第 2 页（`page_idx` 为 1）的脚注标记是单独的 `equation_inline`，内容是 `^{1}`，脚注块也以 `^{1}` 开头。这一页没有再对 PDF。
+这 4 页的扁平化结果里，图块、表格 HTML 和下标是 MinerU 留下的，所以选定 MinerU。PyMuPDF 导出和按坐标重排的代码已从当前源码移除。扁平化会丢掉上标样式，所以当时写成了 `dataset1`。
+
+2026-11-06 用现在这份 middle JSON 又对照了这 4 页。顺序与 PDF 一致，文字完整。标题是 `paragraph_title`，图注在 `chart` 或 `image` 里面，表注在 `table` 里面，表格正文是 HTML。下标和行内公式是 `equation_inline`，例如 GPipe 的 `L_{i}`、`T(L,H,A)`。Medusa 第 2 页的脚注标记是单独的 `^{1}`，脚注块 `page_footnote` 也以 `^{1}` 开头，不再是 `dataset1` 和 `1Upon`。
+
+这两处和 PDF 不完全一样，但不影响把这 4 页读完：
+
+- Megatron-LM 第 2 页作者肩标里的 `1` 带 `superscript`，旁边的 `2` 没有。
+- 标准档把文档标题以外的标题都写成 `level` 为 2。`2.1` 和 `2` 是同一级。不带下标的单个斜体字母，例如 GPipe 里的 `L`、`K`，写成普通大写字母。
 
 ## 还没做
 
-- 用现在这份 middle JSON 再对照 PDF。上面 4 页的结论不能直接套到新文件上。
-- 分块还没有读这些块。表格正文仍在 `table_body` 里，图注仍在图片块下面，公式仍是 `equation` 或 `equation_inline`。
+- 分块还没有读这些块。表格正文仍在 `table_body` 里，图注在图块的 `content` 里，公式仍是 `equation` 或 `equation_inline`。
+- 其余页没有对照 PDF。
