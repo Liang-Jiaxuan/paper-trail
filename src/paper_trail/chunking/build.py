@@ -4,7 +4,16 @@ import json
 import re
 from pathlib import Path
 
-CHUNK_VERSION = 1
+CHUNK_VERSION = 2
+MAX_CHARS = 800
+
+_DATA_IMAGE = re.compile(
+    r"""<img\b[^>]*\bsrc=["']data:image/[^"']*["'][^>]*>""",
+    re.IGNORECASE,
+)
+_SENTENCE_BREAK = re.compile(r"。|(?<=[.!?])\s+(?=[A-Z])")
+_HTML_TAG = re.compile(r"<[^>]+>")
+_TABLE_ROW = re.compile(r"<tr\b", re.IGNORECASE)
 
 # 页眉、页脚、页码、脚注不进正文。
 _SKIP_TYPES = {"header", "footer", "page_number", "page_footnote"}
@@ -41,6 +50,110 @@ def join_text(previous: str, following: str) -> str:
     if previous[-1].isspace() or following[0].isspace():
         return previous + following
     return previous + following if previous.endswith("-") else previous + " " + following
+
+
+def _strip_data_images(text: str) -> str:
+    """去掉嵌在 HTML 里的 data:image。图注留在后面的文字里。"""
+    return _DATA_IMAGE.sub("", text)
+
+
+def _row_count(text: str) -> int:
+    return len(_TABLE_ROW.findall(text))
+
+
+def _plain_from_html(html: str) -> str:
+    """一行假表里的正文。标签去掉，单元格之间留空格。"""
+    text = re.sub(r"<br\s*/?>", "\n", html, flags=re.IGNORECASE)
+    text = re.sub(r"</t[dh]>", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"</tr>", "\n", text, flags=re.IGNORECASE)
+    text = _HTML_TAG.sub("", text)
+    for source, target in (
+        ("&#x27;", "'"),
+        ("&quot;", '"'),
+        ("&amp;", "&"),
+        ("&lt;", "<"),
+        ("&gt;", ">"),
+    ):
+        text = text.replace(source, target)
+    return re.sub(r"[ \t]{2,}", " ", text).strip()
+
+
+def _sentences(text: str) -> list[str]:
+    """在句号后切开。Fig. 5 和 1.5 这种点号后面不是大写字母，不切。"""
+    parts = []
+    start = 0
+    for match in _SENTENCE_BREAK.finditer(text):
+        end = match.end() if match.group(0).startswith("。") else match.start()
+        piece = text[start:end].strip()
+        if piece:
+            parts.append(piece)
+        start = match.end()
+    tail = text[start:].strip()
+    if tail:
+        parts.append(tail)
+    return parts
+
+
+def _hard_cut(text: str) -> list[str]:
+    """一句自己超过上限时按字符切开，相邻块不重叠。"""
+    return [text[index : index + MAX_CHARS] for index in range(0, len(text), MAX_CHARS)]
+
+
+def _pack(sentences: list[str]) -> list[str]:
+    """把句子装进不超过 MAX_CHARS 的块。"""
+    groups = []
+    buffer = ""
+    for sentence in sentences:
+        pieces = _hard_cut(sentence) if len(sentence) > MAX_CHARS else [sentence]
+        for piece in pieces:
+            if not buffer:
+                buffer = piece
+            elif len(buffer) + 1 + len(piece) <= MAX_CHARS:
+                buffer = f"{buffer} {piece}"
+            else:
+                groups.append(buffer)
+                buffer = piece
+    if buffer:
+        groups.append(buffer)
+    return groups
+
+
+def _prose_pieces(text: str) -> list[str]:
+    if len(text) <= MAX_CHARS:
+        return [text]
+    pieces = _pack(_sentences(text))
+    return pieces or [text]
+
+
+def _pieces_for(chunk: dict, text: str) -> list[str]:
+    """正文和参考文献超长才按句号拆。多行表和短表保留 HTML。"""
+    if chunk["block_type"] in {"text", "ref_text"}:
+        return _prose_pieces(text)
+    if chunk["block_type"] == "table" and _row_count(text) <= 1:
+        plain = _plain_from_html(text)
+        if len(plain) > MAX_CHARS:
+            return _prose_pieces(plain)
+    return [text]
+
+
+def _expand(chunks: list[dict]) -> list[dict]:
+    """先去掉 data:image，再把超长正文拆开，最后重排序号和 chunk_id。"""
+    expanded = []
+    for chunk in chunks:
+        text = _strip_data_images(chunk["text"])
+        flag = chunk["_has_doc_title"]
+        pieces = _pieces_for(chunk, text)
+        for piece in pieces:
+            item = {key: value for key, value in chunk.items() if key != "_has_doc_title"}
+            item["text"] = piece
+            item["section_path"] = list(chunk["section_path"])
+            item["_has_doc_title"] = flag
+            expanded.append(item)
+    for index, item in enumerate(expanded):
+        flag = item.pop("_has_doc_title")
+        item["sequence"] = index
+        item["chunk_id"] = _chunk_id(item["paper_id"], item["section_path"], flag, index)
+    return expanded
 
 
 def _slug(text: str) -> str:
@@ -101,7 +214,7 @@ def chunks_from_document(document: dict) -> list[dict]:
             )
             if block_type == "text":
                 last_text = len(chunks) - 1
-    return chunks
+    return _expand(chunks)
 
 
 def _make_chunk(paper_id, sha256, section_path, has_doc_title, sequence, page_number, block_type, text) -> dict:
@@ -116,6 +229,7 @@ def _make_chunk(paper_id, sha256, section_path, has_doc_title, sequence, page_nu
         "end_page": page_number,
         "block_type": block_type,
         "text": text,
+        "_has_doc_title": has_doc_title,
     }
 
 

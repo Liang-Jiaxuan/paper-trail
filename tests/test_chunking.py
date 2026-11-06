@@ -165,3 +165,74 @@ class ChunkingTest(unittest.TestCase):
         self.assertEqual(len(chunks[3]["section_path"]), 2)
         self.assertEqual(chunks[0]["chunk_id"], "shoeybi-megatron-lm/0000")
         self.assertEqual(chunks[2]["chunk_id"], "shoeybi-megatron-lm/2-background/0002")
+
+    def test_long_prose_splits_on_the_sentence_without_overlap(self):
+        """超过 800 字符时在句号处切开。Fig. 5 不当成句号。单句超长才按字符硬切。"""
+        first = "A" * 500 + ". "
+        second = "The " + "B" * 500 + "."
+        hard = "C" * 900
+        document = document_with(
+            [
+                (
+                    0,
+                    [
+                        {"type": "text", "content": [{"type": "text", "content": first + second}]},
+                        {"type": "text", "content": [{"type": "text", "content": "Fig. 5 shows the result. The next point holds."}]},
+                        {"type": "text", "content": [{"type": "text", "content": hard}]},
+                    ],
+                )
+            ]
+        )
+        chunks = chunks_from_document(document)
+        self.assertEqual(chunks[0]["text"], first.strip())
+        self.assertEqual(chunks[1]["text"], second)
+        self.assertNotIn(chunks[0]["text"][-20:], chunks[1]["text"])
+        self.assertEqual(chunks[2]["text"], "Fig. 5 shows the result. The next point holds.")
+        self.assertEqual(chunks[3]["text"], "C" * 800)
+        self.assertEqual(chunks[4]["text"], "C" * 100)
+        self.assertEqual([item["sequence"] for item in chunks], list(range(5)))
+
+    def test_multirow_table_stays_and_fake_table_drops_the_image(self):
+        """多行表整块留下。只有一行的表去掉 data:image 后按正文切。"""
+        rows = "".join(f"<tr><td>{'D' * 100}</td></tr>" for _ in range(10))
+        long = "E" * 500 + ". " + "The " + "F" * 500 + "."
+        image = '<img src="data:image/jpeg;base64,AAAA"/>'
+        document = document_with(
+            [
+                (
+                    11,
+                    [
+                        {"type": "table", "content": [{"type": "table_body", "content": f"<table>{rows}</table>"}]},
+                        {
+                            "type": "table",
+                            "content": [
+                                {
+                                    "type": "table_body",
+                                    "content": f"<table><tr><td>patterns. {image}Figure 8. Grouping of GPUs. {long}</td></tr></table>",
+                                }
+                            ],
+                        },
+                    ],
+                )
+            ]
+        )
+        chunks = chunks_from_document(document)
+        self.assertEqual(chunks[0]["block_type"], "table")
+        self.assertIn("<table>", chunks[0]["text"])
+        self.assertGreater(len(chunks[0]["text"]), 800)
+        joined = " ".join(item["text"] for item in chunks[1:])
+        self.assertNotIn("data:image", joined)
+        self.assertIn("Figure 8. Grouping of GPUs.", joined)
+        self.assertGreater(len(chunks), 2)
+        self.assertTrue(all(item["block_type"] == "table" for item in chunks[1:]))
+
+    def test_long_reference_splits_like_prose(self):
+        """参考文献超过 800 字符时也按句号切开。"""
+        text = "Smith, A. wrote one paper. " + "The " + "R" * 500 + ". " + "Jones, B. wrote another. " + "The " + "S" * 500 + "."
+        document = document_with(
+            [(0, [{"type": "ref_text", "content": [{"type": "text", "content": text}]}])]
+        )
+        chunks = chunks_from_document(document)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(len(item["text"]) <= 800 for item in chunks))
+        self.assertTrue(all(item["block_type"] == "ref_text" for item in chunks))
