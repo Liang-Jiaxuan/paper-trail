@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)。
 
 ## 语料主题
 
@@ -38,6 +38,10 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 后面的分块读 `data/parsed/mineru/<paper_id>.json`。`middle` 是 MinerU 的 middle JSON，外层加上 `paper_id` 和 `sha256`。块的类型、层级和行内样式按 MinerU 的原样保留。PyMuPDF 导出和按坐标重排的代码已从当前源码移除，对照结论留在 PARSING.md。
 
+## 分块按标题顺序，不猜父子
+
+分块规则见 [CHUNKING.md](CHUNKING.md)。`section_path` 保留文档标题，`chunk_id` 不重复它。后一个小节标题替换上一个。`2` 和 `2.1` 不做成父子。`continues_prev` 的正文接回前面的正文，图和表留在原来的位置。页眉、页脚、页码和脚注不进正文 chunk。
+
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
@@ -46,16 +50,16 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 ## 实现约束
 
-解析的当前行为见 [PARSING.md](PARSING.md)。下面这些约束还没有做完：
+解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)。分块已经做到：
+
+- chunk ID 由 `paper_id`、当前小节和块序号生成，文档标题不写入 ID，重复构建结果不变。
+- chunk 记录起止页码，不只记第一页。
+- 不静默丢弃短块。
+
+下面这些约束还没有做完：
 
 - 表格区域从正文中排除，表格内容只入库一次。
 - 章节、页眉页脚的识别规则针对英文论文设计。
-
-分块：
-
-- chunk ID 由 `paper_id`、章节路径和块序号生成，重复构建结果不变。
-- chunk 记录起止页码，不只记第一页。
-- 不静默丢弃短块。
 
 检索：
 

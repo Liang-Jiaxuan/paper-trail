@@ -1,0 +1,167 @@
+"""用抽检过的 Megatron-LM 片段检查分块。"""
+
+import unittest
+
+from paper_trail.chunking.build import chunks_from_document
+
+
+def text_block(page_idx, index, content, continues_prev=False):
+    block = {
+        "type": "text",
+        "index": index,
+        "content": [{"type": "text", "content": content}],
+    }
+    if continues_prev:
+        block["continues_prev"] = True
+    return page_idx, block
+
+
+def document_with(pages):
+    """pages 是 (page_idx, blocks) 的列表。"""
+    return {
+        "paper_id": "shoeybi-megatron-lm",
+        "sha256": "abc",
+        "middle": {
+            "pages": [{"page_idx": page_idx, "blocks": blocks} for page_idx, blocks in pages]
+        },
+    }
+
+
+class ChunkingTest(unittest.TestCase):
+    def test_page_break_hyphen_stays_in_one_chunk(self):
+        """第 5 页结尾 itera- 和第 6 页开头 tions 接成一块，页码跨 5 到 6。"""
+        document = document_with(
+            [
+                (
+                    4,
+                    [
+                        {
+                            "type": "header",
+                            "content": [{"type": "text", "content": "Megatron-LM"}],
+                        },
+                        {
+                            "type": "text",
+                            "index": 13,
+                            "content": [
+                                {"type": "text", "content": "For GPT-2 models, all training is performed with sequences of 1024 subword units at a batch size of 512 for 300k itera-"}
+                            ],
+                        },
+                    ],
+                ),
+                (
+                    5,
+                    [
+                        {
+                            "type": "text",
+                            "index": 1,
+                            "continues_prev": True,
+                            "content": [{"type": "text", "content": "tions. Our learning rate of 1.5e-4 utilizes a warmup period"}],
+                        },
+                        {
+                            "type": "page_number",
+                            "content": [{"type": "text", "content": "6"}],
+                        },
+                    ],
+                ),
+            ]
+        )
+        chunks = chunks_from_document(document)
+        self.assertEqual(len(chunks), 1)
+        self.assertEqual(chunks[0]["start_page"], 5)
+        self.assertEqual(chunks[0]["end_page"], 6)
+        self.assertIn("300k itera-tions. Our learning rate", chunks[0]["text"])
+        self.assertNotIn("Megatron-LM", chunks[0]["text"])
+        again = chunks_from_document(document)
+        self.assertEqual([item["chunk_id"] for item in chunks], [item["chunk_id"] for item in again])
+
+    def test_table_and_figure_do_not_break_the_sentence(self):
+        """Table 1 和 Figure 5 留在原处。被它们分开的句子仍是同一块。"""
+        document = document_with(
+            [
+                (
+                    5,
+                    [
+                        {
+                            "type": "paragraph_title",
+                            "level": 2,
+                            "content": [{"type": "text", "content": "5.1.1. MODEL AND DATA PARALLELISM"}],
+                        },
+                        {
+                            "type": "text",
+                            "index": 8,
+                            "content": [{"type": "text", "content": "Weak scaling is typically"}],
+                        },
+                        {
+                            "type": "table",
+                            "index": 10,
+                            "content": [
+                                {
+                                    "type": "table_caption",
+                                    "content": [{"type": "text", "content": "Table 1. Parameters used for scaling studies."}],
+                                },
+                                {
+                                    "type": "table_body",
+                                    "content": "<table><tr><td>1536</td><td>16</td></tr></table>",
+                                },
+                            ],
+                        },
+                        {
+                            "type": "chart",
+                            "index": 11,
+                            "content": [
+                                {"type": "chart_body", "content": ""},
+                                {
+                                    "type": "chart_caption",
+                                    "content": [{"type": "text", "content": "Figure 5. Model and model + data parallel weak scaling efficiency."}],
+                                },
+                            ],
+                        },
+                        {
+                            "type": "text",
+                            "index": 13,
+                            "continues_prev": True,
+                            "content": [{"type": "text", "content": "done by scaling the batch-size"}],
+                        },
+                    ],
+                )
+            ]
+        )
+        chunks = chunks_from_document(document)
+        kinds = [item["block_type"] for item in chunks]
+        self.assertEqual(kinds, ["paragraph_title", "text", "table", "chart"])
+        text = chunks[1]
+        self.assertIn("Weak scaling is typically done by scaling the batch-size", text["text"])
+        self.assertEqual(text["start_page"], 6)
+        self.assertEqual(text["end_page"], 6)
+        self.assertIn("<table>", chunks[2]["text"])
+        self.assertIn("Table 1. Parameters", chunks[2]["text"])
+        self.assertIn("Figure 5.", chunks[3]["text"])
+        self.assertLess(text["sequence"], chunks[2]["sequence"])
+        self.assertEqual(
+            text["section_path"],
+            ["5.1.1. MODEL AND DATA PARALLELISM"],
+        )
+        self.assertEqual(text["chunk_id"], "shoeybi-megatron-lm/5-1-1-model-and-data-parallelism/0001")
+
+    def test_short_chunk_is_kept_and_titles_do_not_nest(self):
+        """单字母块留下。后一个小节标题替换上一个，不放进它下面。"""
+        document = document_with(
+            [
+                (
+                    0,
+                    [
+                        {"type": "doc_title", "content": [{"type": "text", "content": "Megatron-LM"}]},
+                        {"type": "paragraph_title", "level": 2, "content": [{"type": "text", "content": "2. Background"}]},
+                        {"type": "text", "content": [{"type": "text", "content": "K"}]},
+                        {"type": "paragraph_title", "level": 2, "content": [{"type": "text", "content": "2.1. Pretraining"}]},
+                    ],
+                )
+            ]
+        )
+        chunks = chunks_from_document(document)
+        self.assertEqual(chunks[2]["text"], "K")
+        self.assertEqual(chunks[1]["section_path"], ["Megatron-LM", "2. Background"])
+        self.assertEqual(chunks[3]["section_path"], ["Megatron-LM", "2.1. Pretraining"])
+        self.assertEqual(len(chunks[3]["section_path"]), 2)
+        self.assertEqual(chunks[0]["chunk_id"], "shoeybi-megatron-lm/0000")
+        self.assertEqual(chunks[2]["chunk_id"], "shoeybi-megatron-lm/2-background/0002")

@@ -1,1 +1,1 @@
-"""父子分块与确定性 chunk ID。本阶段只有包占位。"""
+"""从 MinerU middle JSON 生成稳定 chunk。"""

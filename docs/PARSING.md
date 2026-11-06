@@ -116,7 +116,6 @@ MinerU 的扁平化结果：
 - Megatron-LM 第 2 页作者肩标里的 `1` 带 `superscript`，旁边的 `2` 没有。
 - 标准档把文档标题以外的标题都写成 `level` 为 2。`2.1` 和 `2` 是同一级。不带下标的单个斜体字母，例如 GPipe 里的 `L`、`K`，写成普通大写字母。
 
-## 还没做
+选型抽检仍是这 4 页。Megatron-LM 第 12 页后来对照过，Figure 8 被收进表格 HTML，见 [CHUNKING.md](CHUNKING.md)。其余页没有对照。
 
-- 分块还没有读这些块。表格正文仍在 `table_body` 里，图注在图块的 `content` 里，公式仍是 `equation` 或 `equation_inline`。
-- 其余页没有对照 PDF。
+分块已经读这些块，规则见 [CHUNKING.md](CHUNKING.md)。
