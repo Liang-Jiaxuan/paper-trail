@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25 见 [INDEXING.md](INDEXING.md)。
 
 ## 语料主题
 
@@ -43,6 +43,10 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 分块规则见 [CHUNKING.md](CHUNKING.md)。`section_path` 保留文档标题，`chunk_id` 不重复它。后一个小节标题替换上一个。`2` 和 `2.1` 不做成父子。`continues_prev` 的正文接回前面的正文，图和表留在原来的位置。页眉、页脚、页码和脚注不进正文 chunk。
 
 超长正文按字符切，上限 800，在句号处下刀，相邻块不重叠。一整句超过 800 才按字符硬切。多于一行的表整块留下。只有一行、去掉标签后仍超过 800 的表，去掉 `data:image` 后按正文切。解析 JSON 不改。
+
+## 先建 BM25，向量索引后做
+
+关键词索引用 Okapi BM25，`k1` 为 1.5，`b` 为 0.75。分词只保留小写后的连续字母和数字。返回里只有 `bm25_score`。规则和一次查询见 [INDEXING.md](INDEXING.md)。向量索引、RRF 和问答留到后面。
 
 ## 包与环境
 

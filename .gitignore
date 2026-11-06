@@ -32,6 +32,7 @@ data/raw_pdf/
 # ===== 可重新生成的中间产物 =====
 data/parsed/
 data/chunks/
+data/indexes/
 data/assets/
 vectorstore/
 
