@@ -8,6 +8,7 @@ QUERY_TOP_K = 5
 MAX_LENGTH = 8192
 BATCH_SIZE = 8
 MODEL_NAME = "BAAI/bge-reranker-v2-m3"
+VEC_SCORE_THRESHOLD = 0.25
 
 
 def apply_rerank(hits: list[dict], scores: list[float], top_k: int = QUERY_TOP_K) -> list[dict]:
@@ -25,6 +26,15 @@ def apply_rerank(hits: list[dict], scores: list[float], top_k: int = QUERY_TOP_K
     for rank, row in enumerate(kept, 1):
         row["rank"] = rank
     return kept
+
+
+def decide_refusal(hits: list[dict], threshold: float = VEC_SCORE_THRESHOLD) -> dict:
+    """用留下的命中里最高的 vec_score 决定是否拒答。重排分不参与。"""
+    scores = [float(hit["vec_score"]) for hit in hits if hit["vec_score"] is not None]
+    if not scores:
+        return {"threshold": threshold, "vec_score_max": None, "refused": True}
+    score = max(scores)
+    return {"threshold": threshold, "vec_score_max": score, "refused": score < threshold}
 
 
 def score_pairs(query: str, hits: list[dict], model_dir: Path) -> list[float]:

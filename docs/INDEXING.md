@@ -1,6 +1,6 @@
 # 索引
 
-读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排。问答还没有。
+读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排，并按留下的 5 条里最高的向量分标记是否拒答。问答还没有。
 
 在仓库根目录先激活 `paper-trail` 环境，再执行。建索引前要保证分块结果存在。`data/indexes/` 不提交。
 
@@ -187,6 +187,9 @@ python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
   "rrf_k": 60,
   "model": "BAAI/bge-reranker-v2-m3",
   "max_length": 8192,
+  "threshold": 0.25,
+  "vec_score_max": 0.6109329462051392,
+  "refused": false,
   "hits": [
     {
       "...": "9 个 chunk 字段，见 CHUNKING.md",
@@ -215,8 +218,40 @@ python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
 
 第一条是含有完整 `15.1 PetaFLOPs` 的段落，页码 1 到 2。它在融合里是第 3 名。第二条是 Megatron-LM 第 1 页的摘要。第三条是第 8 页的结论段。第四条是 ZeRO 第 5 页那句 “15 Petaflops”，融合第 1 名落到这里。第五条是 ZeRO 第 1 页的摘要，里面有 “15 Petaflops”；它只在 BM25 候选里，融合名次是 11，向量分数和名次是 null。融合第 5 名的标题 `5.1.1. MODEL AND DATA PARALLELISM` 不再进入这 5 条。
 
+拒答看这 5 条里最高的 `vec_score`，字段是 `vec_score_max`。大于等于 `threshold` 0.25 时 `refused` 为 false，五条都没有向量分时 `vec_score_max` 为 null、`refused` 为 true。`rrf_score` 和 `rerank_score` 不参与。上面这次的最高向量分是第 4 名的 0.6109329462051392，`refused` 是 false。命中仍全部留下。下面三次都是 2026-11-07、`candidate_k` 50，按 0.25 也都放行。
+
+`What is the boiling point of water?` 这 6 篇答不上，`candidate_count` 是 90。5 条里最高的 `vec_score` 是 0.40087148547172546，低于 `15.1 PetaFLOPs` 那次的 0.6109329462051392。
+
+| 名次 | 页 | vec_score | rerank_score | chunk_id |
+| --- | --- | --- | --- | --- |
+| 1 | 13 | 0.3828029930591583 | -2.874436378479004 | `shoeybi-megatron-lm/c-text-samples/0177` |
+| 2 | 14 | 0.38788729906082153 | -3.1859498023986816 | `shoeybi-megatron-lm/c-text-samples/0178` |
+| 3 | 23 | 0.3923434615135193 | -4.26680326461792 | `rajbhandari-zero/references/0209` |
+| 4 | 24 | 0.3609020709991455 | -5.196231842041016 | `rajbhandari-zero/references/0214` |
+| 5 | 25 | 0.40087148547172546 | -5.3026442527771 | `cai-medusa/g-2-flop-s-vs-operational-intensity-variations-in-medusa/0250` |
+
+`super-linear speedup on 400 GPUs` 在语料里，`candidate_count` 是 77。5 条里最高的 `vec_score` 是 0.6945400238037109。第 1 名是 ZeRO 第 5 页 `rajbhandari-zero/1-extended-introduction/0035`，文本里有 “super linear speedup” 和 “64-400 GPUs”。
+
+| 名次 | 页 | vec_score | rerank_score | chunk_id |
+| --- | --- | --- | --- | --- |
+| 1 | 5 | 0.6945400238037109 | 4.839119911193848 | `rajbhandari-zero/1-extended-introduction/0035` |
+| 2 | 1 | 0.6131923198699951 | 2.6205317974090576 | `rajbhandari-zero/abstract/0006` |
+| 3 | 17 | 0.6671919226646423 | 1.4718767404556274 | `rajbhandari-zero/10-3-super-linear-scalability/0161` |
+| 4 | 23 | 0.603034496307373 | 1.2053837776184082 | `rajbhandari-zero/references/0211` |
+| 5 | 24 | 0.5922790765762329 | 0.33146071434020996 | `rajbhandari-zero/references/0215` |
+
+`How many parameters does GPT-4 have?` 这 6 篇也答不上，`candidate_count` 是 82。5 条里最高的 `vec_score` 是第 2 名的 0.6355667114257812，高于 `15.1 PetaFLOPs` 那次的 0.6109329462051392。这条是 Megatron-LM 第 6 页讲 GPT-2 参数规模的段落，没有 GPT-4 的参数量。0.25 低于这次的 0.6355667114257812，也低于 `15.1 PetaFLOPs` 的 0.6109329462051392，两句都会放行。
+
+| 名次 | 页 | vec_score | rerank_score | chunk_id |
+| --- | --- | --- | --- | --- |
+| 1 | 7 | 0.5298908948898315 | 0.346469521522522 | `shoeybi-megatron-lm/5-2-language-modeling-results-using-gpt-2/0087` |
+| 2 | 6 | 0.6355667114257812 | 0.21141931414604187 | `shoeybi-megatron-lm/5-1-scaling-analysis/0074` |
+| 3 | 13 | 0.4994128346443176 | -0.11769899725914001 | `shoeybi-megatron-lm/c-text-samples/0177` |
+| 4 | 2 | null | -0.512144923210144 | `shoeybi-megatron-lm/1-introduction/0020` |
+| 5 | 1 | 0.4986346364021301 | -0.5454120635986328 | `rajbhandari-zero/1-extended-introduction/0008` |
+
 ## 还没做
 
-- 还没有按论文过滤，也没有拒答阈值。
+- 还没有按论文过滤。有过滤时拒答检查仍要做，这一步还没写。
 - 问答还没有。
 - bge-m3 的稀疏向量和多向量还没有用。

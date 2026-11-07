@@ -2,7 +2,7 @@
 
 import unittest
 
-from paper_trail.indexing.rerank import QUERY_TOP_K, apply_rerank
+from paper_trail.indexing.rerank import QUERY_TOP_K, VEC_SCORE_THRESHOLD, apply_rerank, decide_refusal
 
 
 def row(chunk_id, rank, rrf_score, bm25_rank=None, vec_rank=None):
@@ -74,3 +74,49 @@ class RerankTest(unittest.TestCase):
     def test_score_count_must_match(self):
         with self.assertRaises(ValueError):
             apply_rerank([row("only", 1, 0.01, bm25_rank=1)], [])
+
+    def test_refusal_uses_highest_vec_score(self):
+        gate = decide_refusal(
+            [
+                {"vec_score": 0.1, "rerank_score": 9.0},
+                {"vec_score": 0.4, "rerank_score": 0.01},
+            ]
+        )
+        self.assertEqual(VEC_SCORE_THRESHOLD, 0.25)
+        self.assertEqual(gate["threshold"], 0.25)
+        self.assertEqual(gate["vec_score_max"], 0.4)
+        self.assertFalse(gate["refused"])
+
+    def test_refusal_below_threshold(self):
+        gate = decide_refusal([{"vec_score": 0.2, "rerank_score": 8.0}])
+        self.assertEqual(gate["vec_score_max"], 0.2)
+        self.assertTrue(gate["refused"])
+
+    def test_refusal_at_threshold_passes(self):
+        gate = decide_refusal([{"vec_score": 0.25, "rerank_score": -3.0}])
+        self.assertFalse(gate["refused"])
+
+    def test_missing_vec_score_refuses(self):
+        gate = decide_refusal(
+            [
+                {"vec_score": None, "rerank_score": 5.0},
+                {"vec_score": None, "rerank_score": 4.0},
+            ]
+        )
+        self.assertIsNone(gate["vec_score_max"])
+        self.assertTrue(gate["refused"])
+
+    def test_empty_hits_refuse(self):
+        gate = decide_refusal([])
+        self.assertIsNone(gate["vec_score_max"])
+        self.assertTrue(gate["refused"])
+
+    def test_null_vec_score_is_skipped(self):
+        gate = decide_refusal(
+            [
+                {"vec_score": None, "rerank_score": 9.0},
+                {"vec_score": 0.24, "rerank_score": 0.1},
+            ]
+        )
+        self.assertEqual(gate["vec_score_max"], 0.24)
+        self.assertTrue(gate["refused"])

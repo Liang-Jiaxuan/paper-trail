@@ -21,7 +21,7 @@ from paper_trail.indexing.dense import embed_texts, load_vector_index, search_ve
 from paper_trail.indexing.rerank import MODEL_NAME as RERANK_MODEL_NAME
 from paper_trail.indexing.rerank import QUERY_TOP_K as RERANK_TOP_K
 from paper_trail.indexing.rerank import MAX_LENGTH as RERANK_MAX_LENGTH
-from paper_trail.indexing.rerank import apply_rerank, score_pairs
+from paper_trail.indexing.rerank import apply_rerank, decide_refusal, score_pairs
 from paper_trail.indexing.rrf import QUERY_TOP_K as RRF_TOP_K
 from paper_trail.indexing.rrf import RRF_K, candidate_k_from_arg, fuse
 
@@ -138,6 +138,7 @@ def main(argv: list[str] | None = None) -> None:
             torch.cuda.empty_cache()
         scores = score_pairs(args[2], fused, config.BGE_RERANKER_DIR)
         hits = apply_rerank(fused, scores, RERANK_TOP_K)
+        gate = decide_refusal(hits)
         config.RERANK_QUERY_PATH.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "query": args[2],
@@ -147,6 +148,9 @@ def main(argv: list[str] | None = None) -> None:
             "rrf_k": RRF_K,
             "model": RERANK_MODEL_NAME,
             "max_length": RERANK_MAX_LENGTH,
+            "threshold": gate["threshold"],
+            "vec_score_max": gate["vec_score_max"],
+            "refused": gate["refused"],
             "hits": hits,
         }
         config.RERANK_QUERY_PATH.write_text(
@@ -154,6 +158,9 @@ def main(argv: list[str] | None = None) -> None:
             encoding="utf-8",
         )
         print(f"写入 {len(hits)} 条到 {config.RERANK_QUERY_PATH}")
+        shown = "null" if gate["vec_score_max"] is None else f"{gate['vec_score_max']:.6f}"
+        label = "拒答" if gate["refused"] else "放行"
+        print(f"{label}  threshold={gate['threshold']}  vec_score_max={shown}")
         for hit in hits:
             print(
                 f"{hit['rank']}  {hit['rerank_score']:.6f}  rrf#{hit['rrf_rank']}  "
