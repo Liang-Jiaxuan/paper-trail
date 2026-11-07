@@ -18,3 +18,4 @@ BGE_M3_DIR = Path(os.environ.get("PAPER_TRAIL_BGE_M3", r"D:\code\models\bge-m3")
 VECTOR_INDEX_PATH = INDEXES_DIR / "dense" / "index.json"
 VECTOR_MATRIX_PATH = INDEXES_DIR / "dense" / "vectors.npy"
 VECTOR_QUERY_PATH = INDEXES_DIR / "dense" / "last_query.json"
+RRF_QUERY_PATH = INDEXES_DIR / "rrf" / "last_query.json"

@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25 和稠密向量见 [INDEXING.md](INDEXING.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量和 RRF 见 [INDEXING.md](INDEXING.md)。
 
 ## 语料主题
 
@@ -50,7 +50,11 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 ## 稠密向量用本地 bge-m3
 
-论文是英文，而且分块里有放不进 512 token 的长表，所以嵌入用本地 `BAAI/bge-m3` 的稠密向量，1024 维，上下文 8192 token。只用稠密向量。NarrativeQA 上的 nDCG@10，bge-m3 稠密向量是 48.7，text-embedding-3-large 是 51.6，接受这个差距。索引和同一次查询见 [INDEXING.md](INDEXING.md)。RRF 和问答留到后面。
+论文是英文，而且分块里有放不进 512 token 的长表，所以嵌入用本地 `BAAI/bge-m3` 的稠密向量，1024 维，上下文 8192 token。只用稠密向量。NarrativeQA 上的 nDCG@10，bge-m3 稠密向量是 48.7，text-embedding-3-large 是 51.6，接受这个差距。索引和同一次查询见 [INDEXING.md](INDEXING.md)。
+
+## 两路用 RRF 融合
+
+BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认取 50 条候选，查询时可以传入别的深度。再按 `1 / (60 + 名次)` 相加，最终留下 5 条。结果同时保留两路的分数和名次，缺的一路留空。规则和一次查询见 [INDEXING.md](INDEXING.md)。
 
 ## 包与环境
 
@@ -74,7 +78,6 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 检索：
 
-- RRF 融合时保留各路的分数和名次，不互相覆盖。
 - 拒答阈值只用向量相似度。RRF 分和 Rerank 分不参与阈值判断，分数缺失时不默认放行。
 - 过滤条件同时作用于向量检索和 BM25，有过滤时也照常做阈值判断。
 - CrossEncoder 在 Pipeline 初始化时加载一次。

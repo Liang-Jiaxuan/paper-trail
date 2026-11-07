@@ -1,4 +1,4 @@
-"""用 bge-m3 的稠密向量建索引。这一阶段不和 BM25 融合。"""
+"""用 bge-m3 的稠密向量建索引。和 BM25 的融合在 rrf.py。"""
 
 import json
 from pathlib import Path

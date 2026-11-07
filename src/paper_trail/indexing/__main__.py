@@ -4,6 +4,8 @@ python -m paper_trail.indexing
 python -m paper_trail.indexing query "查询语句"
 python -m paper_trail.indexing vectors
 python -m paper_trail.indexing vectors query "查询语句"
+python -m paper_trail.indexing rrf query "查询语句"
+python -m paper_trail.indexing rrf query "查询语句" 50
 """
 
 import json
@@ -14,12 +16,16 @@ from paper_trail.indexing.bm25 import QUERY_TOP_K as BM25_TOP_K
 from paper_trail.indexing.bm25 import load_index, search, write_index
 from paper_trail.indexing.dense import QUERY_TOP_K as VECTOR_TOP_K
 from paper_trail.indexing.dense import embed_texts, load_vector_index, search_vectors, write_vector_index
+from paper_trail.indexing.rrf import QUERY_TOP_K as RRF_TOP_K
+from paper_trail.indexing.rrf import RRF_K, candidate_k_from_arg, fuse
 
 _USAGE = """用法:
   python -m paper_trail.indexing
   python -m paper_trail.indexing query "查询语句"
   python -m paper_trail.indexing vectors
-  python -m paper_trail.indexing vectors query "查询语句\""""
+  python -m paper_trail.indexing vectors query "查询语句"
+  python -m paper_trail.indexing rrf query "查询语句"
+  python -m paper_trail.indexing rrf query "查询语句" 50\""""
 
 
 def _write_query(path, query: str, top_k: int, hits: list[dict]) -> None:
@@ -62,6 +68,41 @@ def main(argv: list[str] | None = None) -> None:
         _write_query(config.VECTOR_QUERY_PATH, args[2], VECTOR_TOP_K, hits)
         for hit in hits:
             print(f"{hit['rank']}  {hit['vec_score']:.4f}  {hit['chunk_id']}  p{hit['start_page']}-{hit['end_page']}")
+        return
+    if args[:2] == ["rrf", "query"] and len(args) in (3, 4):
+        try:
+            candidate_k = candidate_k_from_arg(args[3] if len(args) == 4 else None)
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
+        if not config.BM25_INDEX_PATH.is_file():
+            raise SystemExit(f"找不到 BM25 索引：{config.BM25_INDEX_PATH}")
+        if not config.VECTOR_INDEX_PATH.is_file():
+            raise SystemExit(f"找不到向量索引：{config.VECTOR_INDEX_PATH}")
+        bm25_hits = search(load_index(config.BM25_INDEX_PATH), args[2], candidate_k)
+        index, vectors = load_vector_index(config.VECTOR_INDEX_PATH, config.VECTOR_MATRIX_PATH)
+        query_vector = embed_texts([args[2]], config.BGE_M3_DIR, batch_size=1)[0]
+        vector_hits = search_vectors(vectors, index["documents"], query_vector, candidate_k)
+        hits = fuse(bm25_hits, vector_hits, RRF_TOP_K)
+        config.RRF_QUERY_PATH.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "query": args[2],
+            "top_k": RRF_TOP_K,
+            "candidate_k": candidate_k,
+            "rrf_k": RRF_K,
+            "hits": hits,
+        }
+        config.RRF_QUERY_PATH.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"写入 {len(hits)} 条到 {config.RRF_QUERY_PATH}")
+        for hit in hits:
+            bm25_rank = "-" if hit["bm25_rank"] is None else str(hit["bm25_rank"])
+            vec_rank = "-" if hit["vec_rank"] is None else str(hit["vec_rank"])
+            print(
+                f"{hit['rank']}  {hit['rrf_score']:.6f}  bm25#{bm25_rank} vec#{vec_rank}  "
+                f"{hit['chunk_id']}  p{hit['start_page']}-{hit['end_page']}"
+            )
         return
     raise SystemExit(_USAGE)
 
