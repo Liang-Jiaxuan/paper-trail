@@ -1,6 +1,6 @@
 # 索引
 
-读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起。重排和问答还没有。
+读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排。问答还没有。
 
 在仓库根目录先激活 `paper-trail` 环境，再执行。建索引前要保证分块结果存在。`data/indexes/` 不提交。
 
@@ -167,9 +167,56 @@ python -m paper_trail.indexing rrf query "15.1 PetaFLOPs" 80
 
 第一条是 ZeRO 第 5 页那句 “15 Petaflops”。第二条是 Megatron-LM 第 1 页的摘要。第三条是含有完整 `15.1 PetaFLOPs` 的段落，页码 1 到 2。第四条是第 8 页的结论段。第五条是第 6 页的标题 `5.1.1. MODEL AND DATA PARALLELISM`。原先只靠向量排在前面的 `2.2 Algorithm` 不再进入这 5 条。
 
+## 重排
+
+```powershell
+python -m paper_trail.indexing rerank query "15.1 PetaFLOPs"
+python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
+```
+
+模型目录由环境变量 `PAPER_TRAIL_BGE_RERANKER` 指定，未设置时用 `D:\code\models\bge-reranker-v2-m3`。它从 bge-m3 接出，头是一个分类 logit。调用时 `max_length` 是 8192。`rerank_score` 是这个 logit，不再套 sigmoid，也不拿去和 `vec_score` 比。模型结构上限是 8192，微调时用的是 1024。`shoeybi-megatron-lm/c-text-samples/0177` 是 1353 token，超过微调长度，表尾效果可能下降。
+
+第一条命令不改两份索引，也不改 BM25、稠密向量和 RRF 的 `last_query.json`。它重新做一次融合：每一路取候选，默认 50，两路合成的全部块都打分，再留下 5 条，写到 `data/indexes/rerank/last_query.json`。模型只接收查询句和每条的 `text`。`bm25_score`、`vec_score` 和 `rrf_score` 留在记录上，不送进模型。不传最后一个数时深度是 50。传入正整数时，只对这一次查询使用那个深度。第二条命令使用 80。某一路没有命中时，那一路的分数和名次仍是 null。融合名次改存在 `rrf_rank`，`rank` 是重排后的名次。
+
+```json
+{
+  "query": "15.1 PetaFLOPs",
+  "top_k": 5,
+  "candidate_k": 50,
+  "candidate_count": 95,
+  "rrf_k": 60,
+  "model": "BAAI/bge-reranker-v2-m3",
+  "max_length": 8192,
+  "hits": [
+    {
+      "...": "9 个 chunk 字段，见 CHUNKING.md",
+      "bm25_score": 8.452302677384164,
+      "bm25_rank": 2,
+      "vec_score": 0.5773992538452148,
+      "vec_rank": 20,
+      "rrf_score": 0.028629032258064516,
+      "rrf_rank": 3,
+      "rerank_score": 4.191327095031738,
+      "rank": 1
+    }
+  ]
+}
+```
+
+`"..."` 不是文件里的字段。`hits` 里实际有 5 条。下面这次用默认深度 50，两路各 50 条，其中 5 个 `chunk_id` 相同，所以合成了 95 条。同时出现在两路前 50 的块，融合分至少是 `1/110 + 1/110`；只出现在一路的块，至多是 `1/61`。所以这 5 条就是融合前 5 名。`rerank_score` 可以大于 1。
+
+| 名次 | 页 | rerank_score | 融合名次 | rrf_score | BM25 名次 | bm25_score | 向量名次 | vec_score | chunk_id |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1–2 | 4.191327095031738 | 3 | 0.028629032258064516 | 2 | 8.452302677384164 | 20 | 0.5773992538452148 | `shoeybi-megatron-lm/1-introduction/0013` |
+| 2 | 1 | 2.374574899673462 | 2 | 0.028693528693528692 | 3 | 7.067312054568449 | 18 | 0.5825684070587158 | `shoeybi-megatron-lm/abstract/0005` |
+| 3 | 8 | 0.6821727156639099 | 4 | 0.025188536953242836 | 5 | 6.664015225446948 | 42 | 0.5636427402496338 | `shoeybi-megatron-lm/6-conclusion-and-future-work/0103` |
+| 4 | 5 | 0.09699694812297821 | 1 | 0.032018442622950824 | 1 | 11.608417976766816 | 4 | 0.6109329462051392 | `rajbhandari-zero/1-extended-introduction/0034` |
+| 5 | 1 | 0.07823505997657776 | 11 | 0.015151515151515152 | 6 | 6.294495410967572 | null | null | `rajbhandari-zero/abstract/0006` |
+
+第一条是含有完整 `15.1 PetaFLOPs` 的段落，页码 1 到 2。它在融合里是第 3 名。第二条是 Megatron-LM 第 1 页的摘要。第三条是第 8 页的结论段。第四条是 ZeRO 第 5 页那句 “15 Petaflops”，融合第 1 名落到这里。第五条是 ZeRO 第 1 页的摘要，里面有 “15 Petaflops”；它只在 BM25 候选里，融合名次是 11，向量分数和名次是 null。融合第 5 名的标题 `5.1.1. MODEL AND DATA PARALLELISM` 不再进入这 5 条。
+
 ## 还没做
 
-- 还没有重排。
 - 还没有按论文过滤，也没有拒答阈值。
 - 问答还没有。
 - bge-m3 的稀疏向量和多向量还没有用。

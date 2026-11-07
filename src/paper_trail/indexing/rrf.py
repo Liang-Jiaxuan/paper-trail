@@ -1,4 +1,4 @@
-"""查询时把 BM25 和稠密向量的名次融在一起。不重建索引。"""
+"""查询时把 BM25 和稠密向量的名次融在一起。不重建索引。重排在 rerank.py。"""
 
 from paper_trail.indexing.bm25 import _FIELDS
 

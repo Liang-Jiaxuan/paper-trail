@@ -1,4 +1,4 @@
-"""用 bge-m3 的稠密向量建索引。和 BM25 的融合在 rrf.py。"""
+"""用 bge-m3 的稠密向量建索引。和 BM25 的融合在 rrf.py，重排在 rerank.py。"""
 
 import json
 from pathlib import Path

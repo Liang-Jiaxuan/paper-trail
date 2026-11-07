@@ -1,4 +1,4 @@
-"""用 chunk 文本建 Okapi BM25。稠密向量在 dense.py，融合在 rrf.py。"""
+"""用 chunk 文本建 Okapi BM25。稠密向量在 dense.py，融合在 rrf.py，重排在 rerank.py。"""
 
 import json
 import math
