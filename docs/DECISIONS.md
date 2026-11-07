@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25 见 [INDEXING.md](INDEXING.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25 和稠密向量见 [INDEXING.md](INDEXING.md)。
 
 ## 语料主题
 
@@ -44,15 +44,19 @@ Get-FileHash -Algorithm SHA256 .\data\raw_pdf\1909.08053v4.pdf
 
 超长正文按字符切，上限 800，在句号处下刀，相邻块不重叠。一整句超过 800 才按字符硬切。多于一行的表整块留下。只有一行、去掉标签后仍超过 800 的表，去掉 `data:image` 后按正文切。解析 JSON 不改。
 
-## 先建 BM25，向量索引后做
+## 关键词用 BM25
 
-关键词索引用 Okapi BM25，`k1` 为 1.5，`b` 为 0.75。分词只保留小写后的连续字母和数字。返回里只有 `bm25_score`。规则和一次查询见 [INDEXING.md](INDEXING.md)。向量索引、RRF 和问答留到后面。
+关键词索引用 Okapi BM25，`k1` 为 1.5，`b` 为 0.75。分词只保留小写后的连续字母和数字。返回里只有 `bm25_score`。规则和一次查询见 [INDEXING.md](INDEXING.md)。
+
+## 稠密向量用本地 bge-m3
+
+论文是英文，而且分块里有放不进 512 token 的长表，所以嵌入用本地 `BAAI/bge-m3` 的稠密向量，1024 维，上下文 8192 token。只用稠密向量。NarrativeQA 上的 nDCG@10，bge-m3 稠密向量是 48.7，text-embedding-3-large 是 51.6，接受这个差距。索引和同一次查询见 [INDEXING.md](INDEXING.md)。RRF 和问答留到后面。
 
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
 - conda 环境 `paper-trail`，Python 3.12，见 `environment.yml`。
-- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`。
+- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`、`numpy`、`sentence-transformers` 和 `torch`。
 
 ## 实现约束
 

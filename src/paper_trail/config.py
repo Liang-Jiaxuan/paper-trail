@@ -1,5 +1,6 @@
-"""仓库路径。检索和模型参数在对应阶段再加入。"""
+"""仓库路径和索引位置。"""
 
+import os
 from pathlib import Path
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -13,3 +14,7 @@ CHUNKS_DIR = DATA_DIR / "chunks"
 INDEXES_DIR = DATA_DIR / "indexes"
 BM25_INDEX_PATH = INDEXES_DIR / "bm25" / "index.json"
 BM25_QUERY_PATH = INDEXES_DIR / "bm25" / "last_query.json"
+BGE_M3_DIR = Path(os.environ.get("PAPER_TRAIL_BGE_M3", r"D:\code\models\bge-m3"))
+VECTOR_INDEX_PATH = INDEXES_DIR / "dense" / "index.json"
+VECTOR_MATRIX_PATH = INDEXES_DIR / "dense" / "vectors.npy"
+VECTOR_QUERY_PATH = INDEXES_DIR / "dense" / "last_query.json"

@@ -1,4 +1,4 @@
-"""用 chunk 文本建 Okapi BM25。这一阶段没有向量索引。"""
+"""用 chunk 文本建 Okapi BM25。稠密向量在 dense.py，两路还没有融合。"""
 
 import json
 import math
