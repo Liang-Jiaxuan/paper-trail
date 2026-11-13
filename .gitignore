@@ -33,6 +33,7 @@ data/raw_pdf/
 data/parsed/
 data/chunks/
 data/indexes/
+data/answers/
 data/assets/
 vectorstore/
 

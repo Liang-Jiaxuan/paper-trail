@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。引用记录见 [GENERATION.md](GENERATION.md)。
 
 ## 语料主题
 
@@ -63,6 +63,10 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 ## 拒答阈值暂定 0.25
 
 `rerank query` 比较留下的 5 条里最高的 `vec_score`。大于等于 0.25 放行，五条都没有向量分就拒答。RRF 分和重排分不参与，缺分不默认放行。0.25 低于已量过的正例，沸点问句和 GPT-4 参数量问句也会放行。结果仍留下这 5 条，并写入 `threshold`、`vec_score_max` 和 `refused`。见 [INDEXING.md](INDEXING.md)。
+
+## 回答先只组装引用
+
+不调用模型。`python -m paper_trail.generation` 读最近一次重排结果。`refused` 为 false 时 `answer` 是 null。`refused` 为 true 时 `answer` 是「没有足够相近的段落，无法回答。」引用保留论文、页码和整段原文。见 [GENERATION.md](GENERATION.md)。
 
 ## 包与环境
 

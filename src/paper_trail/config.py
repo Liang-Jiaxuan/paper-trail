@@ -21,3 +21,4 @@ VECTOR_QUERY_PATH = INDEXES_DIR / "dense" / "last_query.json"
 RRF_QUERY_PATH = INDEXES_DIR / "rrf" / "last_query.json"
 BGE_RERANKER_DIR = Path(os.environ.get("PAPER_TRAIL_BGE_RERANKER", r"D:\code\models\bge-reranker-v2-m3"))
 RERANK_QUERY_PATH = INDEXES_DIR / "rerank" / "last_query.json"
+ANSWER_PATH = DATA_DIR / "answers" / "last_answer.json"

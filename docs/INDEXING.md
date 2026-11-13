@@ -1,6 +1,6 @@
 # 索引
 
-读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排，并按留下的 5 条里最高的向量分标记是否拒答。问答还没有。
+读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排，并按留下的 5 条里最高的向量分标记是否拒答。
 
 在仓库根目录先激活 `paper-trail` 环境，再执行。建索引前要保证分块结果存在。`data/indexes/` 不提交。
 
@@ -253,5 +253,4 @@ python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
 ## 还没做
 
 - 还没有按论文过滤。有过滤时拒答检查仍要做，这一步还没写。
-- 问答还没有。
 - bge-m3 的稀疏向量和多向量还没有用。
