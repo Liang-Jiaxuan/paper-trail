@@ -2,7 +2,14 @@
 
 import unittest
 
-from paper_trail.generation.answer import REFUSAL_ANSWER, build_answer
+from paper_trail.generation.answer import (
+    MODEL_NAME,
+    REFUSAL_ANSWER,
+    attach_summary,
+    build_answer,
+    prompt_messages,
+    summary_text,
+)
 
 
 def payload(refused, hits):
@@ -38,6 +45,7 @@ class AnswerTest(unittest.TestCase):
     def test_pass_leaves_answer_empty(self):
         answer = build_answer(payload(False, [hit()]))
         self.assertIsNone(answer["answer"])
+        self.assertIsNone(answer["model"])
         self.assertFalse(answer["refused"])
         self.assertEqual(answer["threshold"], 0.25)
         self.assertEqual(answer["vec_score_max"], 0.4)
@@ -46,7 +54,8 @@ class AnswerTest(unittest.TestCase):
     def test_refusal_uses_fixed_sentence_and_keeps_citations(self):
         answer = build_answer(payload(True, [hit(vec_score=0.2)]))
         self.assertEqual(answer["answer"], REFUSAL_ANSWER)
-        self.assertEqual(REFUSAL_ANSWER, "没有足够相近的段落，无法回答。")
+        self.assertEqual(REFUSAL_ANSWER, "No passage is close enough to answer.")
+        self.assertIsNone(answer["model"])
         self.assertEqual(len(answer["citations"]), 1)
         self.assertEqual(answer["citations"][0]["text"], "full chunk text")
 
@@ -83,3 +92,25 @@ class AnswerTest(unittest.TestCase):
     def test_missing_field_raises(self):
         with self.assertRaises(KeyError):
             build_answer({"query": "example", "hits": []})
+
+    def test_prompt_sends_passage_text_and_skips_scores(self):
+        messages = prompt_messages("How many?", [hit(vec_score=0.419283, rerank_score=9.876)])
+        user = messages[1]["content"]
+        self.assertIn("[1] example p1-2", user)
+        self.assertIn("full chunk text", user)
+        self.assertIn("Question:\nHow many?", user)
+        self.assertNotIn("0.419283", user)
+        self.assertNotIn("9.876", user)
+        self.assertIn("No passage is close enough to answer.", messages[0]["content"])
+
+    def test_attach_summary_keeps_refused_flag(self):
+        answer = build_answer(payload(False, [hit()]))
+        written = attach_summary(answer, "GPT-2 has 1.5B parameters [2].")
+        self.assertEqual(written["answer"], "GPT-2 has 1.5B parameters [2].")
+        self.assertEqual(written["model"], MODEL_NAME)
+        self.assertFalse(written["refused"])
+        self.assertIsNone(answer["answer"])
+
+    def test_blank_summary_is_rejected(self):
+        with self.assertRaises(ValueError):
+            summary_text("  \n")

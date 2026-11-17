@@ -1,10 +1,11 @@
-"""把最近一次重排结果写成引用：python -m paper_trail.generation"""
+"""把最近一次重排结果写成引用，并在未拒答时写英文概括句：python -m paper_trail.generation"""
 
 import json
+import os
 import sys
 
 from paper_trail import config
-from paper_trail.generation.answer import build_answer
+from paper_trail.generation.answer import attach_summary, build_answer, prompt_messages, request_summary
 
 _USAGE = "用法: python -m paper_trail.generation"
 
@@ -22,6 +23,19 @@ def main(argv: list[str] | None = None) -> None:
         answer = build_answer(payload)
     except KeyError as exc:
         raise SystemExit(f"重排结果缺少字段：{exc.args[0]}") from exc
+    if not answer["refused"]:
+        api_key = os.environ.get("DEEPSEEK_API_KEY")
+        if not api_key:
+            raise SystemExit("请设置环境变量 DEEPSEEK_API_KEY")
+        try:
+            content = request_summary(
+                prompt_messages(answer["query"], answer["citations"]),
+                api_key,
+            )
+            answer = attach_summary(answer, content)
+        except Exception as exc:
+            message = str(exc).replace(api_key, "***")
+            raise SystemExit(f"概括句请求失败：{message}") from exc
     config.ANSWER_PATH.parent.mkdir(parents=True, exist_ok=True)
     config.ANSWER_PATH.write_text(
         json.dumps(answer, ensure_ascii=False, indent=2) + "\n",
@@ -31,7 +45,8 @@ def main(argv: list[str] | None = None) -> None:
     if answer["refused"]:
         print(f"拒答  {answer['answer']}")
     else:
-        print("放行  answer=null")
+        print(f"概括  model={answer['model']}")
+        print(answer["answer"])
     for citation in answer["citations"]:
         print(
             f"{citation['rank']}  {citation['chunk_id']}  "

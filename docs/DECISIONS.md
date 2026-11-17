@@ -64,15 +64,15 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 `rerank query` 比较留下的 5 条里最高的 `vec_score`。大于等于 0.25 放行，五条都没有向量分就拒答。RRF 分和重排分不参与，缺分不默认放行。0.25 低于已量过的正例，沸点问句和 GPT-4 参数量问句也会放行。结果仍留下这 5 条，并写入 `threshold`、`vec_score_max` 和 `refused`。见 [INDEXING.md](INDEXING.md)。
 
-## 回答先只组装引用
+## 概括句用 deepseek-flash
 
-不调用模型。`python -m paper_trail.generation` 读最近一次重排结果。`refused` 为 false 时 `answer` 是 null。`refused` 为 true 时 `answer` 是「没有足够相近的段落，无法回答。」引用保留论文、页码和整段原文。见 [GENERATION.md](GENERATION.md)。
+`refused` 为 true 时不请求模型。`refused` 为 false 时把问题、名次、论文、页码和整段原文送给 `deepseek-flash`，用英文写 `answer`。原文里没有答案时，模型必须回答 `No passage is close enough to answer.`。这句话也是门槛拒答的固定句。`refused` 仍只表示向量分门槛。见 [GENERATION.md](GENERATION.md)。
 
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
 - conda 环境 `paper-trail`，Python 3.12，见 `environment.yml`。
-- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`、`numpy`、`sentence-transformers` 和 `torch`。
+- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`、`numpy`、`openai`、`sentence-transformers` 和 `torch`。
 
 ## 实现约束
 

@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "mineru>=4.0,<5",
     "numpy",
+    "openai",
     "sentence-transformers>=3,<6",
     "torch>=2.6",
 ]
