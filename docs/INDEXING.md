@@ -1,6 +1,6 @@
 # 索引
 
-读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排，并按留下的 5 条里最高的向量分标记是否拒答。
+读 `data/chunks/`，为每块的 `text` 各建一份索引。这一阶段有两路：Okapi BM25，以及本地 bge-m3 的稠密向量。查询时用 RRF 把两路名次加在一起，再用本地 bge-reranker-v2-m3 重排，并按留下的 5 条里最高的向量分标记是否拒答。重排查询可以先按论文名单留下允许的块。
 
 在仓库根目录先激活 `paper-trail` 环境，再执行。建索引前要保证分块结果存在。`data/indexes/` 不提交。
 
@@ -172,11 +172,13 @@ python -m paper_trail.indexing rrf query "15.1 PetaFLOPs" 80
 ```powershell
 python -m paper_trail.indexing rerank query "15.1 PetaFLOPs"
 python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
+python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" shoeybi-megatron-lm
+python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 50 shoeybi-megatron-lm rajbhandari-zero
 ```
 
 模型目录由环境变量 `PAPER_TRAIL_BGE_RERANKER` 指定，未设置时用 `D:\code\models\bge-reranker-v2-m3`。它从 bge-m3 接出，头是一个分类 logit。调用时 `max_length` 是 8192。`rerank_score` 是这个 logit，不再套 sigmoid，也不拿去和 `vec_score` 比。模型结构上限是 8192，微调时用的是 1024。`shoeybi-megatron-lm/c-text-samples/0177` 是 1353 token，超过微调长度，表尾效果可能下降。
 
-第一条命令不改两份索引，也不改 BM25、稠密向量和 RRF 的 `last_query.json`。它重新做一次融合：每一路取候选，默认 50，两路合成的全部块都打分，再留下 5 条，写到 `data/indexes/rerank/last_query.json`。模型只接收查询句和每条的 `text`。`bm25_score`、`vec_score` 和 `rrf_score` 留在记录上，不送进模型。不传最后一个数时深度是 50。传入正整数时，只对这一次查询使用那个深度。第二条命令使用 80。某一路没有命中时，那一路的分数和名次仍是 null。融合名次改存在 `rrf_rank`，`rank` 是重排后的名次。
+第一条命令不改两份索引，也不改 BM25、稠密向量和 RRF 的 `last_query.json`。它重新做一次融合：每一路取候选，默认 50，两路合成的全部块都打分，再留下 5 条，写到 `data/indexes/rerank/last_query.json`。模型只接收查询句和每条的 `text`。`bm25_score`、`vec_score` 和 `rrf_score` 留在记录上，不送进模型。不传深度时是 50。查询后的第一个词是纯数字时，它是这一次的候选深度，后面的词是 `paper_id`。第一个词不是数字时，这些词都是 `paper_id`，深度仍是 50。第二条命令使用 80。第三条只在 `shoeybi-megatron-lm` 里取候选。第四条深度是 50，论文是 `shoeybi-megatron-lm` 和 `rajbhandari-zero`。清单里的 6 个标识是 `huang-gpipe`、`shoeybi-megatron-lm`、`rajbhandari-zero`、`kwon-pagedattention`、`xiao-smoothquant`、`cai-medusa`。不在清单里的标识会让命令退出，例如 `找不到论文：missing-paper`。不写名单时 `paper_ids` 是 null。写了名单时，两路先丢掉名单外的块，再各自取候选，名次只在留下的块里从 1 排。分数仍按整份索引计算。`fuse` 不改。单独的 BM25、向量和 RRF 命令不接收这份名单。过滤后一条候选都没有时，不加载重排模型，`candidate_count` 是 0，`vec_score_max` 是 null，`refused` 是 true。某一路没有命中时，那一路的分数和名次仍是 null。融合名次改存在 `rrf_rank`，`rank` 是重排后的名次。
 
 ```json
 {
@@ -206,7 +208,7 @@ python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
 }
 ```
 
-`"..."` 不是文件里的字段。`hits` 里实际有 5 条。下面这次用默认深度 50，两路各 50 条，其中 5 个 `chunk_id` 相同，所以合成了 95 条。同时出现在两路前 50 的块，融合分至少是 `1/110 + 1/110`；只出现在一路的块，至多是 `1/61`。所以这 5 条就是融合前 5 名。`rerank_score` 可以大于 1。
+`"..."` 不是文件里的字段。`hits` 里实际有 5 条。这份 15.1 记录写于加上 `paper_ids` 之前，所以示例里没有这个字段。之后的重排结果会带上它，没过滤时是 null。下面这次用默认深度 50，两路各 50 条，其中 5 个 `chunk_id` 相同，所以合成了 95 条。同时出现在两路前 50 的块，融合分至少是 `1/110 + 1/110`；只出现在一路的块，至多是 `1/61`。所以这 5 条就是融合前 5 名。`rerank_score` 可以大于 1。
 
 | 名次 | 页 | rerank_score | 融合名次 | rrf_score | BM25 名次 | bm25_score | 向量名次 | vec_score | chunk_id |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -252,5 +254,4 @@ python -m paper_trail.indexing rerank query "15.1 PetaFLOPs" 80
 
 ## 还没做
 
-- 还没有按论文过滤。有过滤时拒答检查仍要做，这一步还没写。
 - bge-m3 的稀疏向量和多向量还没有用。

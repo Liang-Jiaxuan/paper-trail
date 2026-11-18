@@ -64,6 +64,10 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 `rerank query` 比较留下的 5 条里最高的 `vec_score`。大于等于 0.25 放行，五条都没有向量分就拒答。RRF 分和重排分不参与，缺分不默认放行。0.25 低于已量过的正例，沸点问句和 GPT-4 参数量问句也会放行。结果仍留下这 5 条，并写入 `threshold`、`vec_score_max` 和 `refused`。见 [INDEXING.md](INDEXING.md)。
 
+## 重排可以按论文过滤
+
+`rerank query` 可以在查询后写若干 `paper_id`。第一个是正整数时仍是候选深度，后面的才是论文。不写名单就是全库。名单在两路各自取候选之前生效，名次只在这些论文里排。`fuse` 不改。单独的 BM25、向量和 RRF 命令不过滤。过滤后没有命中时仍按没有向量分拒答。清单里没有的 `paper_id` 会让命令退出。见 [INDEXING.md](INDEXING.md)。
+
 ## 概括句用 deepseek-flash
 
 `refused` 为 true 时不请求模型。`refused` 为 false 时把问题、名次、论文、页码和整段原文送给 `deepseek-flash`，用英文写 `answer`。原文里没有答案时，模型必须回答 `No passage is close enough to answer.`。这句话也是门槛拒答的固定句。`refused` 仍只表示向量分门槛。见 [GENERATION.md](GENERATION.md)。
@@ -94,7 +98,6 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 检索：
 
-- 过滤条件同时作用于向量检索和 BM25，有过滤时也照常做阈值判断。
 - CrossEncoder 在 Pipeline 初始化时加载一次。
 
 工程与评测：

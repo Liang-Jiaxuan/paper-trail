@@ -2,7 +2,14 @@
 
 import unittest
 
-from paper_trail.indexing.rerank import QUERY_TOP_K, VEC_SCORE_THRESHOLD, apply_rerank, decide_refusal
+from paper_trail.indexing.rerank import (
+    QUERY_TOP_K,
+    VEC_SCORE_THRESHOLD,
+    apply_rerank,
+    decide_refusal,
+    require_known_papers,
+    split_query_options,
+)
 
 
 def row(chunk_id, rank, rrf_score, bm25_rank=None, vec_rank=None):
@@ -110,6 +117,25 @@ class RerankTest(unittest.TestCase):
         gate = decide_refusal([])
         self.assertIsNone(gate["vec_score_max"])
         self.assertTrue(gate["refused"])
+
+    def test_query_options_keep_depth_and_papers_apart(self):
+        self.assertEqual(split_query_options([]), (50, None))
+        self.assertEqual(split_query_options(["50"]), (50, None))
+        self.assertEqual(split_query_options(["shoeybi-megatron-lm"]), (50, ["shoeybi-megatron-lm"]))
+        self.assertEqual(
+            split_query_options(["50", "shoeybi-megatron-lm", "rajbhandari-zero", "shoeybi-megatron-lm"]),
+            (50, ["shoeybi-megatron-lm", "rajbhandari-zero"]),
+        )
+        with self.assertRaises(ValueError):
+            split_query_options(["0"])
+
+    def test_unknown_paper_is_rejected(self):
+        manifest = {"papers": [{"paper_id": "huang-gpipe"}]}
+        require_known_papers(None, manifest)
+        require_known_papers(["huang-gpipe"], manifest)
+        with self.assertRaises(ValueError) as caught:
+            require_known_papers(["huang-gpipe", "missing-paper"], manifest)
+        self.assertEqual(str(caught.exception), "找不到论文：missing-paper")
 
     def test_null_vec_score_is_skipped(self):
         gate = decide_refusal(

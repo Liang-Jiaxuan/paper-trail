@@ -76,7 +76,3 @@ python -m paper_trail.generation
 | 5 | 1 | 0.4986346364021301 | -0.5454120635986328 | `rajbhandari-zero/1-extended-introduction/0008` |
 
 `vec_score_max` 来自第 2 名，是 0.6355667114257812，高于第 1 名的 0.5298908948898315，名次仍是 2。第 3 条的 `text` 有 5444 个字符，文件里是整段。这些段落讲的是 GPT-2 和训练规模，没有 GPT-4 的参数量。模型因此写出固定句，`refused` 仍是 false。这句里没有整数或小数，所以 `number_checks` 是 `[]`，`numbers_ok` 是 true。这次没有再请求模型。
-
-## 还没做
-
-- 还没有按论文过滤。

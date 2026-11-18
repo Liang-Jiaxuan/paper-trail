@@ -8,6 +8,8 @@ python -m paper_trail.indexing rrf query "查询语句"
 python -m paper_trail.indexing rrf query "查询语句" 50
 python -m paper_trail.indexing rerank query "查询语句"
 python -m paper_trail.indexing rerank query "查询语句" 50
+python -m paper_trail.indexing rerank query "查询语句" shoeybi-megatron-lm
+python -m paper_trail.indexing rerank query "查询语句" 50 shoeybi-megatron-lm
 """
 
 import json
@@ -21,7 +23,7 @@ from paper_trail.indexing.dense import embed_texts, load_vector_index, search_ve
 from paper_trail.indexing.rerank import MODEL_NAME as RERANK_MODEL_NAME
 from paper_trail.indexing.rerank import QUERY_TOP_K as RERANK_TOP_K
 from paper_trail.indexing.rerank import MAX_LENGTH as RERANK_MAX_LENGTH
-from paper_trail.indexing.rerank import apply_rerank, decide_refusal, score_pairs
+from paper_trail.indexing.rerank import apply_rerank, decide_refusal, require_known_papers, score_pairs, split_query_options
 from paper_trail.indexing.rrf import QUERY_TOP_K as RRF_TOP_K
 from paper_trail.indexing.rrf import RRF_K, candidate_k_from_arg, fuse
 
@@ -33,7 +35,9 @@ _USAGE = """用法:
   python -m paper_trail.indexing rrf query "查询语句"
   python -m paper_trail.indexing rrf query "查询语句" 50
   python -m paper_trail.indexing rerank query "查询语句"
-  python -m paper_trail.indexing rerank query "查询语句" 50\""""
+  python -m paper_trail.indexing rerank query "查询语句" 50
+  python -m paper_trail.indexing rerank query "查询语句" shoeybi-megatron-lm
+  python -m paper_trail.indexing rerank query "查询语句" 50 shoeybi-megatron-lm\""""
 
 
 def _write_query(path, query: str, top_k: int, hits: list[dict]) -> None:
@@ -112,9 +116,14 @@ def main(argv: list[str] | None = None) -> None:
                 f"{hit['chunk_id']}  p{hit['start_page']}-{hit['end_page']}"
             )
         return
-    if args[:2] == ["rerank", "query"] and len(args) in (3, 4):
+    if args[:2] == ["rerank", "query"] and len(args) >= 3:
         try:
-            candidate_k = candidate_k_from_arg(args[3] if len(args) == 4 else None)
+            candidate_k, paper_ids = split_query_options(args[3:])
+            if paper_ids is not None:
+                if not config.MANIFEST_PATH.is_file():
+                    raise SystemExit(f"找不到论文清单：{config.MANIFEST_PATH}")
+                manifest = json.loads(config.MANIFEST_PATH.read_text(encoding="utf-8"))
+                require_known_papers(paper_ids, manifest)
         except ValueError as exc:
             raise SystemExit(str(exc)) from exc
         if not config.BM25_INDEX_PATH.is_file():
@@ -123,10 +132,11 @@ def main(argv: list[str] | None = None) -> None:
             raise SystemExit(f"找不到向量索引：{config.VECTOR_INDEX_PATH}")
         if not config.BGE_RERANKER_DIR.is_dir():
             raise SystemExit(f"找不到重排模型：{config.BGE_RERANKER_DIR}")
-        bm25_hits = search(load_index(config.BM25_INDEX_PATH), args[2], candidate_k)
+        allowed = None if paper_ids is None else set(paper_ids)
+        bm25_hits = search(load_index(config.BM25_INDEX_PATH), args[2], candidate_k, allowed)
         index, vectors = load_vector_index(config.VECTOR_INDEX_PATH, config.VECTOR_MATRIX_PATH)
         query_vector = embed_texts([args[2]], config.BGE_M3_DIR, batch_size=1)[0]
-        vector_hits = search_vectors(vectors, index["documents"], query_vector, candidate_k)
+        vector_hits = search_vectors(vectors, index["documents"], query_vector, candidate_k, allowed)
         fused = fuse(bm25_hits, vector_hits, len(bm25_hits) + len(vector_hits))
         del index, vectors, query_vector
         import gc
@@ -136,7 +146,7 @@ def main(argv: list[str] | None = None) -> None:
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-        scores = score_pairs(args[2], fused, config.BGE_RERANKER_DIR)
+        scores = score_pairs(args[2], fused, config.BGE_RERANKER_DIR) if fused else []
         hits = apply_rerank(fused, scores, RERANK_TOP_K)
         gate = decide_refusal(hits)
         config.RERANK_QUERY_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -144,6 +154,7 @@ def main(argv: list[str] | None = None) -> None:
             "query": args[2],
             "top_k": RERANK_TOP_K,
             "candidate_k": candidate_k,
+            "paper_ids": paper_ids,
             "candidate_count": len(fused),
             "rrf_k": RRF_K,
             "model": RERANK_MODEL_NAME,
@@ -158,6 +169,8 @@ def main(argv: list[str] | None = None) -> None:
             encoding="utf-8",
         )
         print(f"写入 {len(hits)} 条到 {config.RERANK_QUERY_PATH}")
+        if paper_ids is not None:
+            print("论文  " + " ".join(paper_ids))
         shown = "null" if gate["vec_score_max"] is None else f"{gate['vec_score_max']:.6f}"
         label = "拒答" if gate["refused"] else "放行"
         print(f"{label}  threshold={gate['threshold']}  vec_score_max={shown}")

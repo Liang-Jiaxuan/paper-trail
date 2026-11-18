@@ -8,10 +8,10 @@ from pathlib import Path
 from paper_trail.indexing.bm25 import load_index, make_index, search, tokenize, write_index
 
 
-def chunk(chunk_id, text, page=1):
+def chunk(chunk_id, text, page=1, paper_id="example"):
     return {
         "chunk_id": chunk_id,
-        "paper_id": "example",
+        "paper_id": paper_id,
         "sha256": "abc",
         "section_path": ["Example"],
         "sequence": 0,
@@ -39,6 +39,26 @@ class Bm25Test(unittest.TestCase):
         self.assertGreater(hits[0]["bm25_score"], 0)
         self.assertEqual(hits[0]["rank"], 1)
         self.assertNotIn("vec_score", hits[0])
+
+    def test_paper_filter_skips_higher_hits_before_top_k(self):
+        index = make_index(
+            2,
+            [
+                chunk("high", "cache", paper_id="other"),
+                chunk("low", "cache plus extra words about training", paper_id="kept"),
+                chunk("zero", "nothing here", paper_id="kept"),
+            ],
+        )
+        unfiltered = search(index, "cache", top_k=1)
+        self.assertEqual(unfiltered[0]["chunk_id"], "high")
+        filtered = search(index, "cache", top_k=1, paper_ids={"kept"})
+        self.assertEqual(filtered[0]["chunk_id"], "low")
+        self.assertEqual(filtered[0]["rank"], 1)
+        wide = search(index, "cache", top_k=5)
+        same = next(hit for hit in wide if hit["chunk_id"] == "low")
+        self.assertEqual(filtered[0]["bm25_score"], same["bm25_score"])
+        self.assertEqual(same["rank"], 2)
+        self.assertEqual([hit["chunk_id"] for hit in search(index, "cache", top_k=5, paper_ids={"kept"})], ["low"])
 
     def test_empty_query_returns_nothing(self):
         index = make_index(2, [chunk("one", "PagedAttention stores blocks.")])

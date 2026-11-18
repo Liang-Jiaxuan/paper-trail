@@ -23,19 +23,29 @@ def unit_vector(vector: np.ndarray) -> np.ndarray:
     return array / norm
 
 
-def search_vectors(vectors: np.ndarray, documents: list[dict], query_vector: np.ndarray, top_k: int = QUERY_TOP_K) -> list[dict]:
-    """内积就是余弦相似度。向量和查询都已经归一化。"""
+def search_vectors(
+    vectors: np.ndarray,
+    documents: list[dict],
+    query_vector: np.ndarray,
+    top_k: int = QUERY_TOP_K,
+    paper_ids: set[str] | None = None,
+) -> list[dict]:
+    """内积就是余弦相似度。向量和查询都已经归一化。传入论文名单时，先丢掉名单外的块再取前 top_k。"""
     if len(documents) != len(vectors):
         raise ValueError("文档数和向量数不一致")
     query = unit_vector(query_vector)
     scores = np.asarray(vectors, dtype=np.float32) @ query
     order = np.argsort(-scores, kind="stable")
     hits = []
-    for index in order[:top_k]:
+    for index in order:
         position = int(index)
+        if paper_ids is not None and documents[position]["paper_id"] not in paper_ids:
+            continue
         hit = dict(documents[position])
         hit["vec_score"] = float(scores[position])
         hits.append(hit)
+        if len(hits) >= top_k:
+            break
     for rank, hit in enumerate(hits, 1):
         hit["rank"] = rank
     return hits

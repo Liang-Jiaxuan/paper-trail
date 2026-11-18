@@ -9,10 +9,10 @@ import numpy as np
 from paper_trail.indexing.dense import load_vector_index, save_vector_index, search_vectors
 
 
-def document(chunk_id, text):
+def document(chunk_id, text, paper_id="example"):
     return {
         "chunk_id": chunk_id,
-        "paper_id": "example",
+        "paper_id": paper_id,
         "sha256": "abc",
         "section_path": ["Example"],
         "sequence": 0,
@@ -32,6 +32,20 @@ class DenseTest(unittest.TestCase):
         self.assertAlmostEqual(hits[0]["vec_score"], 0.8)
         self.assertEqual(hits[0]["rank"], 1)
         self.assertNotIn("bm25_score", hits[0])
+
+    def test_paper_filter_keeps_a_hit_outside_the_global_top_k(self):
+        documents = [
+            document("first", "a", paper_id="other"),
+            document("second", "b", paper_id="kept"),
+            document("third", "c", paper_id="other"),
+        ]
+        vectors = np.eye(3, dtype=np.float32)
+        query = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+        self.assertEqual(search_vectors(vectors, documents, query, top_k=1)[0]["chunk_id"], "first")
+        filtered = search_vectors(vectors, documents, query, top_k=1, paper_ids={"kept"})
+        self.assertEqual(filtered[0]["chunk_id"], "second")
+        self.assertEqual(filtered[0]["rank"], 1)
+        self.assertAlmostEqual(filtered[0]["vec_score"], 0.0)
 
     def test_save_and_load_roundtrip(self):
         documents = [document("alpha", "pipeline parallelism")]

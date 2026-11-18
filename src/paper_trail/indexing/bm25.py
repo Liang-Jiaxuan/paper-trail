@@ -107,8 +107,8 @@ def load_index(index_path: Path) -> dict:
     return payload
 
 
-def search(index: dict, query: str, top_k: int = QUERY_TOP_K) -> list[dict]:
-    """按 bm25_score 从高到低返回。分数为 0 的块不返回。"""
+def search(index: dict, query: str, top_k: int = QUERY_TOP_K, paper_ids: set[str] | None = None) -> list[dict]:
+    """按 bm25_score 从高到低返回。分数为 0 的块不返回。传入论文名单时，先丢掉名单外的块再取前 top_k。分数仍按整份索引计算。"""
     documents = index["documents"]
     tokens = [tokenize(document["text"]) for document in documents]
     ranked = sorted(
@@ -119,7 +119,10 @@ def search(index: dict, query: str, top_k: int = QUERY_TOP_K) -> list[dict]:
     for index_in_corpus, score in ranked:
         if score <= 0:
             continue
-        hit = dict(documents[index_in_corpus])
+        document = documents[index_in_corpus]
+        if paper_ids is not None and document["paper_id"] not in paper_ids:
+            continue
+        hit = dict(document)
         hit["bm25_score"] = score
         hits.append(hit)
         if len(hits) >= top_k:

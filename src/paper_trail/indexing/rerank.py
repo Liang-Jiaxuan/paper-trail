@@ -4,11 +4,42 @@ from pathlib import Path
 
 import numpy as np
 
+from paper_trail.indexing.rrf import CANDIDATE_K, candidate_k_from_arg
+
 QUERY_TOP_K = 5
 MAX_LENGTH = 8192
 BATCH_SIZE = 8
 MODEL_NAME = "BAAI/bge-reranker-v2-m3"
 VEC_SCORE_THRESHOLD = 0.25
+
+
+def split_query_options(tokens: list[str]) -> tuple[int, list[str] | None]:
+    """查询后面的词。第一个是纯数字时它是候选深度，其余是论文。否则全部是论文，深度仍是 50。"""
+    if not tokens:
+        return CANDIDATE_K, None
+    if tokens[0].isdigit():
+        return candidate_k_from_arg(tokens[0]), _paper_ids(tokens[1:])
+    return CANDIDATE_K, _paper_ids(tokens)
+
+
+def _paper_ids(names: list[str]) -> list[str] | None:
+    if not names:
+        return None
+    seen = []
+    for name in names:
+        if name not in seen:
+            seen.append(name)
+    return seen
+
+
+def require_known_papers(paper_ids: list[str] | None, manifest: dict) -> None:
+    """名单里的 paper_id 必须在清单中。"""
+    if not paper_ids:
+        return
+    known = {paper["paper_id"] for paper in manifest["papers"]}
+    missing = [paper_id for paper_id in paper_ids if paper_id not in known]
+    if missing:
+        raise ValueError("找不到论文：" + ", ".join(missing))
 
 
 def apply_rerank(hits: list[dict], scores: list[float], top_k: int = QUERY_TOP_K) -> list[dict]:
