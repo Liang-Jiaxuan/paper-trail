@@ -5,8 +5,10 @@ import unittest
 from paper_trail.generation.answer import (
     MODEL_NAME,
     REFUSAL_ANSWER,
+    attach_number_checks,
     attach_summary,
     build_answer,
+    check_numbers,
     prompt_messages,
     summary_text,
 )
@@ -114,3 +116,64 @@ class AnswerTest(unittest.TestCase):
     def test_blank_summary_is_rejected(self):
         with self.assertRaises(ValueError):
             summary_text("  \n")
+
+    def test_refusal_sentence_has_no_numbers(self):
+        result = check_numbers(REFUSAL_ANSWER, [{"rank": 1, "text": "8.3 billion"}])
+        self.assertEqual(result["number_checks"], [])
+        self.assertTrue(result["numbers_ok"])
+
+    def test_citation_marker_is_not_a_number(self):
+        result = check_numbers("See the passage [1].", [{"rank": 1, "text": "no digits"}])
+        self.assertEqual(result["number_checks"], [])
+        self.assertTrue(result["numbers_ok"])
+
+    def test_number_must_match_the_marked_passage(self):
+        citations = [
+            {"rank": 1, "text": "studied up to 8.3 billion parameters"},
+            {"rank": 2, "text": "GPT-2 (1.5B)"},
+        ]
+        result = check_numbers("The model has 8.3 billion parameters [1].", citations)
+        self.assertEqual(result["number_checks"], [{"number": "8.3", "ranks": [1], "found": True}])
+        self.assertTrue(result["numbers_ok"])
+
+    def test_decimal_does_not_match_a_longer_decimal(self):
+        result = check_numbers("It reached 8.3 [1].", [{"rank": 1, "text": "reached 8.30"}])
+        self.assertFalse(result["number_checks"][0]["found"])
+        self.assertFalse(result["numbers_ok"])
+
+    def test_integer_does_not_match_inside_a_decimal(self):
+        result = check_numbers("The figure is 15 [1].", [{"rank": 1, "text": "15.1 PetaFLOPs"}])
+        self.assertEqual(result["number_checks"][0]["number"], "15")
+        self.assertFalse(result["number_checks"][0]["found"])
+
+    def test_number_without_a_marker_fails(self):
+        result = check_numbers("It uses 8.3 billion parameters.", [{"rank": 1, "text": "8.3 billion"}])
+        self.assertEqual(result["number_checks"][0]["ranks"], [])
+        self.assertFalse(result["number_checks"][0]["found"])
+        self.assertFalse(result["numbers_ok"])
+
+    def test_two_numbers_use_the_markers_before_the_next_number(self):
+        citations = [
+            {"rank": 1, "text": "8.3 billion"},
+            {"rank": 2, "text": "17 billion"},
+        ]
+        result = check_numbers("8.3 billion [1] and 17 billion [2].", citations)
+        self.assertEqual(
+            result["number_checks"],
+            [
+                {"number": "8.3", "ranks": [1], "found": True},
+                {"number": "17", "ranks": [2], "found": True},
+            ],
+        )
+
+    def test_attach_number_checks_keeps_answer_and_refused(self):
+        record = {
+            "answer": "8.3 [1]",
+            "refused": False,
+            "citations": [{"rank": 1, "text": "8.3 billion"}],
+        }
+        checked = attach_number_checks(record)
+        self.assertEqual(record["answer"], "8.3 [1]")
+        self.assertFalse(record["refused"])
+        self.assertTrue(checked["numbers_ok"])
+        self.assertEqual(list(checked)[-3:], ["number_checks", "numbers_ok", "citations"])

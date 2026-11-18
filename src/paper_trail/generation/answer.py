@@ -1,5 +1,7 @@
 """把重排结果整理成引用，并在未拒答时请 deepseek-flash 写英文概括句。"""
 
+import re
+
 REFUSAL_ANSWER = "No passage is close enough to answer."
 MODEL_NAME = "deepseek-flash"
 BASE_URL = "https://api.deepseek.com"
@@ -66,6 +68,48 @@ def attach_summary(answer: dict, content: str) -> dict:
     updated["answer"] = summary_text(content)
     updated["model"] = MODEL_NAME
     return updated
+
+
+_CITE = re.compile(r"\[(\d+)\]")
+_NUMBER = re.compile(r"\d+\.\d+|\d+")
+
+
+def _contains_number(passage: str, number: str) -> bool:
+    """按原样匹配。8.3 不能算进 8.30 或 18.3。"""
+    return re.search(rf"(?<![\d.]){re.escape(number)}(?![\d.])", passage) is not None
+
+
+def check_numbers(answer: str, citations: list[dict]) -> dict:
+    """核对答案里的数字是否出现在它后面标注的段落中。"""
+    cite_spans = [(item.start(), item.end(), int(item.group(1))) for item in _CITE.finditer(answer)]
+    numbers = []
+    for item in _NUMBER.finditer(answer):
+        if any(start <= item.start() and item.end() <= end for start, end, _rank in cite_spans):
+            continue
+        numbers.append((item.start(), item.end(), item.group(0)))
+    by_rank = {citation["rank"]: citation["text"] for citation in citations}
+    checks = []
+    for index, (start, end, number) in enumerate(numbers):
+        next_start = numbers[index + 1][0] if index + 1 < len(numbers) else len(answer)
+        ranks = []
+        for cite_start, cite_end, rank in cite_spans:
+            if end <= cite_start and cite_end <= next_start and rank not in ranks:
+                ranks.append(rank)
+        found = bool(ranks) and all(_contains_number(by_rank.get(rank, ""), number) for rank in ranks)
+        checks.append({"number": number, "ranks": ranks, "found": found})
+    return {"number_checks": checks, "numbers_ok": all(item["found"] for item in checks)}
+
+
+def attach_number_checks(answer: dict) -> dict:
+    """加上数字检查。不改 answer 和 refused。"""
+    result = check_numbers(answer["answer"], answer["citations"])
+    ordered = {}
+    for key, value in answer.items():
+        if key == "citations":
+            ordered["number_checks"] = result["number_checks"]
+            ordered["numbers_ok"] = result["numbers_ok"]
+        ordered[key] = value
+    return ordered
 
 
 def request_summary(messages: list[dict], api_key: str) -> str:

@@ -68,6 +68,10 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 `refused` 为 true 时不请求模型。`refused` 为 false 时把问题、名次、论文、页码和整段原文送给 `deepseek-flash`，用英文写 `answer`。原文里没有答案时，模型必须回答 `No passage is close enough to answer.`。这句话也是门槛拒答的固定句。`refused` 仍只表示向量分门槛。见 [GENERATION.md](GENERATION.md)。
 
+## 答案里的数字要在被标的段落里
+
+概括句里的整数和小数，必须按原样出现在它后面标出的段落原文中。`[1]` 这种名次不算数字。没有数字则通过。检查只写入 `number_checks` 和 `numbers_ok`，不改 `answer` 和 `refused`。括号写在数字前面时可能配错，所以 `numbers_ok` 先不当成已经核对通过。见 [GENERATION.md](GENERATION.md)。
+
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
