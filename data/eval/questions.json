@@ -1,0 +1,170 @@
+{
+  "question_version": 1,
+  "questions": [
+    {
+      "id": "megatron-15-1-petaflops",
+      "query": "How many PetaFLOPs does Megatron-LM sustain for the 8.3 billion parameter model on 512 GPUs?",
+      "passages": [
+        {
+          "chunk_id": "shoeybi-megatron-lm/abstract/0005",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 1,
+          "end_page": 1,
+          "evidence": "15.1 PetaFLOPs"
+        },
+        {
+          "chunk_id": "shoeybi-megatron-lm/1-introduction/0013",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 1,
+          "end_page": 2,
+          "evidence": "15.1 PetaFLOPs"
+        },
+        {
+          "chunk_id": "shoeybi-megatron-lm/6-conclusion-and-future-work/0103",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 8,
+          "end_page": 8,
+          "evidence": "15.1 PetaFLOPs"
+        }
+      ]
+    },
+    {
+      "id": "megatron-first-gemm",
+      "query": "How does Megatron-LM partition the first GEMM in the MLP block?",
+      "passages": [
+        {
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0049",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "evidence": "partition the first GEMM in this column parallel fashion"
+        }
+      ]
+    },
+    {
+      "id": "megatron-two-all-reduces",
+      "query": "How many all-reduces does one Megatron-LM transformer layer use in the forward and backward pass?",
+      "passages": [
+        {
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0054",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "evidence": "only two all-reduces in the forward path and two in the backward path"
+        }
+      ]
+    },
+    {
+      "id": "zero-name",
+      "query": "What does ZeRO stand for?",
+      "passages": [
+        {
+          "chunk_id": "rajbhandari-zero/abstract/0004",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 1,
+          "end_page": 1,
+          "evidence": "Zero Redundancy Optimizer"
+        },
+        {
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0012",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 2,
+          "end_page": 2,
+          "evidence": "Zero Redundancy Optimizer"
+        }
+      ]
+    },
+    {
+      "id": "zero-400-gpus",
+      "query": "What speedup does ZeRO report when training on 400 GPUs?",
+      "passages": [
+        {
+          "chunk_id": "rajbhandari-zero/abstract/0006",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 1,
+          "end_page": 1,
+          "evidence": "super-linear speedup on 400 GPUs"
+        },
+        {
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0035",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 5,
+          "end_page": 5,
+          "evidence": "64-400 GPUs"
+        }
+      ]
+    },
+    {
+      "id": "pagedattention-internal-fragmentation",
+      "query": "Why do existing systems in the PagedAttention paper suffer from internal fragmentation in the KV cache?",
+      "passages": [
+        {
+          "chunk_id": "kwon-pagedattention/1-introduction/0016",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 2,
+          "end_page": 2,
+          "evidence": "internal fragmentation"
+        },
+        {
+          "chunk_id": "kwon-pagedattention/3-1-memory-management-in-existing-systems/0057",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 4,
+          "end_page": 4,
+          "evidence": "internal fragmentation"
+        }
+      ]
+    },
+    {
+      "id": "gpipe-micro-batches",
+      "query": "How does GPipe divide a mini-batch for the forward pass?",
+      "passages": [
+        {
+          "chunk_id": "huang-gpipe/2-2-algorithm/0024",
+          "paper_id": "huang-gpipe",
+          "start_page": 3,
+          "end_page": 3,
+          "evidence": "divides every mini-batch of size N into M equal micro-batches"
+        }
+      ]
+    },
+    {
+      "id": "medusa-head",
+      "query": "What is the architecture of each Medusa head?",
+      "passages": [
+        {
+          "chunk_id": "cai-medusa/2-1-1-medusa-heads/0029",
+          "paper_id": "cai-medusa",
+          "start_page": 3,
+          "end_page": 3,
+          "evidence": "a single layer of feed-forward network with a residual connection"
+        }
+      ]
+    },
+    {
+      "id": "medusa-frozen-backbone",
+      "query": "What happens to the backbone LLM when MEDUSA-1 heads are fine-tuned?",
+      "passages": [
+        {
+          "chunk_id": "cai-medusa/abstract/0005",
+          "paper_id": "cai-medusa",
+          "start_page": 1,
+          "end_page": 1,
+          "evidence": "frozen backbone LLM"
+        }
+      ]
+    },
+    {
+      "id": "smoothquant-scaling",
+      "query": "What transformation does SmoothQuant use to move quantization difficulty from activations to weights?",
+      "passages": [
+        {
+          "chunk_id": "xiao-smoothquant/1-introduction/0014",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 2,
+          "end_page": 2,
+          "evidence": "mathematically equivalent per-channel scaling transformation"
+        }
+      ]
+    }
+  ]
+}

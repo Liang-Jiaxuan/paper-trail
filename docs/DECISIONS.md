@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。引用记录见 [GENERATION.md](GENERATION.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。引用记录见 [GENERATION.md](GENERATION.md)。评测题见 [EVAL.md](EVAL.md)。
 
 ## 语料主题
 
@@ -75,6 +75,10 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 ## 答案里的数字要在被标的段落里
 
 概括句里的整数和小数，必须按原样出现在它后面标出的段落原文中。`[1]` 这种名次不算数字。没有数字则通过。检查只写入 `number_checks` 和 `numbers_ok`，不改 `answer` 和 `refused`。括号写在数字前面时可能配错，所以 `numbers_ok` 先不当成已经核对通过。见 [GENERATION.md](GENERATION.md)。
+
+## 评测题只收块里有的原句
+
+一道题可以有多处出处。每一处必须在那一块的 `text` 里原样含有它的 `evidence`。转述、要看图才能回答、或块里对不上这串字的说法，不写成题。这 10 题还没有跑检索。见 [EVAL.md](EVAL.md)。
 
 ## 包与环境
 

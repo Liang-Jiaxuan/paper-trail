@@ -8,7 +8,7 @@
 
 ## 当前状态
 
-早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页。2026-11-06 用这份 middle JSON 又对照了这 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。分块读这份 middle JSON，规则见 [docs/CHUNKING.md](docs/CHUNKING.md)。BM25、bge-m3 稠密向量、RRF 融合、重排、拒答标记和按论文过滤见 [docs/INDEXING.md](docs/INDEXING.md)。引用、英文概括句和数字归属见 [docs/GENERATION.md](docs/GENERATION.md)。
+早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页。2026-11-06 用这份 middle JSON 又对照了这 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。分块读这份 middle JSON，规则见 [docs/CHUNKING.md](docs/CHUNKING.md)。BM25、bge-m3 稠密向量、RRF 融合、重排、拒答标记和按论文过滤见 [docs/INDEXING.md](docs/INDEXING.md)。引用、英文概括句和数字归属见 [docs/GENERATION.md](docs/GENERATION.md)。10 道评测题见 [docs/EVAL.md](docs/EVAL.md)，还没有跑。
 
 ## 计划
 
