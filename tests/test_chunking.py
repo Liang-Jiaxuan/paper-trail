@@ -236,3 +236,52 @@ class ChunkingTest(unittest.TestCase):
         self.assertGreater(len(chunks), 1)
         self.assertTrue(all(len(item["text"]) <= 800 for item in chunks))
         self.assertTrue(all(item["block_type"] == "ref_text" for item in chunks))
+
+    def test_a_text_block_copied_from_table_cells_is_dropped(self):
+        """整段就是同一页单元格拼出来的正文不留下。句子里只提到一个格子，以及被表隔开的正文，都留下。"""
+        cells = "Hidden Size Attention heads Number of layers"
+        document = document_with(
+            [
+                (
+                    5,
+                    [
+                        {
+                            "type": "table",
+                            "content": [
+                                {
+                                    "type": "table_caption",
+                                    "content": [{"type": "text", "content": "Table 1. Parameters used for scaling studies."}],
+                                },
+                                {
+                                    "type": "table_body",
+                                    "content": "<table><tr><td>Hidden Size</td><td>Attention heads</td><td>Number of layers</td></tr></table>",
+                                },
+                            ],
+                        },
+                        {"type": "text", "content": [{"type": "text", "content": cells}]},
+                        {
+                            "type": "text",
+                            "content": [{"type": "text", "content": "The Hidden Size grows with the model."}],
+                        },
+                        {"type": "text", "content": [{"type": "text", "content": "Weak scaling is typically"}]},
+                        {
+                            "type": "text",
+                            "continues_prev": True,
+                            "content": [{"type": "text", "content": cells}],
+                        },
+                        {
+                            "type": "text",
+                            "continues_prev": True,
+                            "content": [{"type": "text", "content": "done by scaling the batch-size"}],
+                        },
+                    ],
+                )
+            ]
+        )
+        chunks = chunks_from_document(document)
+        texts = [item["text"] for item in chunks]
+        self.assertTrue(any(item["block_type"] == "table" and "Hidden Size" in item["text"] for item in chunks))
+        self.assertNotIn(cells, texts)
+        self.assertTrue(any("The Hidden Size grows with the model." in item for item in texts))
+        self.assertTrue(any("Weak scaling is typically done by scaling the batch-size" in item for item in texts))
+        self.assertTrue(all(cells not in item for item in texts if not item.startswith("<table>")))

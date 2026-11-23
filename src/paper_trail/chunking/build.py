@@ -14,6 +14,8 @@ _DATA_IMAGE = re.compile(
 _SENTENCE_BREAK = re.compile(r"。|(?<=[.!?])\s+(?=[A-Z])")
 _HTML_TAG = re.compile(r"<[^>]+>")
 _TABLE_ROW = re.compile(r"<tr\b", re.IGNORECASE)
+_WHITESPACE = re.compile(r"\s+")
+MIN_TABLE_COPY_CHARS = 15
 
 # 页眉、页脚、页码、脚注不进正文。
 _SKIP_TYPES = {"header", "footer", "page_number", "page_footnote"}
@@ -172,6 +174,30 @@ def _chunk_id(paper_id: str, section_path: list[str], has_doc_title: bool, seque
     return f"{paper_id}/{number}"
 
 
+def _norm(text: str) -> str:
+    return _WHITESPACE.sub(" ", text).strip()
+
+
+def _table_copy_text(block: dict) -> str:
+    """表注和单元格的可见文字。不含 HTML 标签。"""
+    parts = []
+    for item in block.get("content") or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") == "table_body" and isinstance(item.get("content"), str):
+            parts.append(_plain_from_html(item["content"]))
+        elif item.get("type") == "table_caption":
+            parts.append(inline_text(item.get("content")))
+    return "\n".join(part for part in parts if part)
+
+
+def _is_table_copy(text: str, table_text: str) -> bool:
+    """整段正文就是这一页表格里的字。短句和只提到某个单元格的句子留下。"""
+    body = _norm(text)
+    bag = _norm(table_text)
+    return len(body) >= MIN_TABLE_COPY_CHARS and bool(bag) and body in bag
+
+
 def chunks_from_document(document: dict) -> list[dict]:
     """按块顺序生成 chunk。continues_prev 的正文接回前面最后一段正文。"""
     paper_id = document["paper_id"]
@@ -183,11 +209,16 @@ def chunks_from_document(document: dict) -> list[dict]:
 
     for page in document["middle"]["pages"]:
         page_number = int(page["page_idx"]) + 1
+        table_text = "\n".join(
+            _table_copy_text(block) for block in page["blocks"] if block.get("type") == "table"
+        )
         for block in page["blocks"]:
             block_type = block.get("type")
             if block_type in _SKIP_TYPES:
                 continue
             text = inline_text(block.get("content"))
+            if block_type == "text" and _is_table_copy(text, table_text):
+                continue
             if block_type in _TITLE_TYPES:
                 if block_type == "doc_title":
                     section_path = [text]
