@@ -1,25 +1,69 @@
-"""对评测题跑一次重排。不改 last_query.json，不调用概括模型。
+"""对评测题跑重排，或按已有重排结果写概括句。
 
 python -m paper_trail.evaluation
+python -m paper_trail.evaluation answers
 """
 
 import gc
 import json
+import os
 import sys
 
 from paper_trail import config
+from paper_trail.evaluation.answers import chunks_by_id, prepare_answer
 from paper_trail.evaluation.retrieval import question_result, retrieval_payload
+from paper_trail.generation.answer import attach_number_checks, attach_summary, prompt_messages, request_summary
 from paper_trail.indexing.bm25 import load_index, search
 from paper_trail.indexing.dense import embed_texts, load_embedder, load_vector_index, search_vectors
 from paper_trail.indexing.rerank import QUERY_TOP_K, apply_rerank, load_reranker, score_pairs
 from paper_trail.indexing.rrf import CANDIDATE_K, fuse
 
 
+def _write_answers() -> None:
+    """读 retrieval.json，未拒答的题各请求一次模型，写入 answers.json。"""
+    if not config.RETRIEVAL_PATH.is_file():
+        raise SystemExit(f"找不到检索结果：{config.RETRIEVAL_PATH}")
+    if not config.CHUNKS_DIR.is_dir():
+        raise SystemExit(f"找不到分块目录：{config.CHUNKS_DIR}")
+    retrieval = json.loads(config.RETRIEVAL_PATH.read_text(encoding="utf-8"))
+    try:
+        chunks = chunks_by_id(config.CHUNKS_DIR)
+        prepared = [prepare_answer(question, chunks) for question in retrieval["questions"]]
+    except (KeyError, FileNotFoundError) as exc:
+        missing = exc.args[0] if isinstance(exc, KeyError) else exc
+        raise SystemExit(f"找不到块：{missing}") from exc
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if any(not item["refused"] for item in prepared) and not api_key:
+        raise SystemExit("请设置环境变量 DEEPSEEK_API_KEY")
+    answers = []
+    for item in prepared:
+        if not item["refused"]:
+            try:
+                content = request_summary(prompt_messages(item["query"], item["citations"]), api_key)
+                item = attach_summary(item, content)
+            except Exception as exc:
+                message = str(exc).replace(api_key, "***")
+                raise SystemExit(f"概括句请求失败：{item['id']}：{message}") from exc
+        item = attach_number_checks(item)
+        answers.append(item)
+        label = "拒答" if item["refused"] else "概括"
+        print(f"{label}  {item['id']}")
+        print(item["answer"])
+        mark = "通过" if item["numbers_ok"] else "未通过"
+        print(f"数字{mark}  {len(item['number_checks'])} 个")
+    payload = {"question_version": retrieval["question_version"], "answers": answers}
+    config.EVAL_ANSWERS_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"写入 {len(answers)} 条到 {config.EVAL_ANSWERS_PATH}")
+
+
 def main(argv: list[str] | None = None) -> None:
-    """读 questions.json，全库重排，写入 retrieval.json。"""
+    """无参数时重排。answers 时写概括句。"""
     args = list(sys.argv[1:] if argv is None else argv)
+    if args == ["answers"]:
+        _write_answers()
+        return
     if args:
-        raise SystemExit("用法:\n  python -m paper_trail.evaluation")
+        raise SystemExit("用法:\n  python -m paper_trail.evaluation\n  python -m paper_trail.evaluation answers")
     if not config.QUESTIONS_PATH.is_file():
         raise SystemExit(f"找不到评测题：{config.QUESTIONS_PATH}")
     if not config.BM25_INDEX_PATH.is_file():

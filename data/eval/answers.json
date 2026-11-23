@@ -1,0 +1,957 @@
+{
+  "question_version": 1,
+  "answers": [
+    {
+      "id": "megatron-15-1-petaflops",
+      "retrieval_hit": true,
+      "query": "How many PetaFLOPs does Megatron-LM sustain for the 8.3 billion parameter model on 512 GPUs?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.6854450702667236,
+      "model": "deepseek-flash",
+      "answer": "15.1 PetaFLOPs [1][2][4]",
+      "number_checks": [
+        {
+          "number": "15.1",
+          "ranks": [
+            1,
+            2,
+            4
+          ],
+          "found": true
+        }
+      ],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "shoeybi-megatron-lm/abstract/0005",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "We illustrate this approach by converging transformer based models up to 8.3 billion parameters using 512 GPUs. We sustain 15.1 PetaFLOPs across the entire application with 76% scaling efficiency when compared to a strong single GPU baseline that sustains 39 TeraFLOPs, which is 30% of peak FLOPs. To demonstrate that large language models can further advance the state of the art (SOTA), we train an 8.3 billion parameter transformer language model similar to GPT-2 and a 3.9 billion parameter model similar to BERT. We show that careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased performance as the model size grows.",
+          "vec_score": 0.6789646148681641,
+          "rerank_score": 5.594396591186523
+        },
+        {
+          "rank": 2,
+          "chunk_id": "shoeybi-megatron-lm/1-introduction/0013",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "1. Introduction"
+          ],
+          "start_page": 1,
+          "end_page": 2,
+          "text": "To demonstrate the scalability of our approach, we establish a baseline by training a model of 1.2 billion parameters on a single NVIDIA V100 32GB GPU, that sustains 39 TeraFLOPs. This is 30% of the theoretical peak FLOPS for a single GPU as configured in a DGX-2H server, and is thus a strong baseline. Scaling the model to 8.3 billion parameters on 512 GPUs with 8-way model parallelism, we achieve up to 15.1 PetaFLOPs per second sustained over the entire application. This is 76% scaling efficiency compared to the single GPU case. Figure 1 shows more detailed scaling results.",
+          "vec_score": 0.6854450702667236,
+          "rerank_score": 5.538087844848633
+        },
+        {
+          "rank": 3,
+          "chunk_id": "rajbhandari-zero/10-6-turing-nlg-the-sota-language-model-with-17b-parameters/0176",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.6 Turing-NLG, the SOTA language model with 17B parameters"
+          ],
+          "start_page": 19,
+          "end_page": 19,
+          "text": "As of May 12th, 2020, Turing-NLG is the largest model in the world with over 17B parameters. It achieved the new SOTA for language models with Webtext-103 perplexity of 10.21. Turing-NLG was trained end-to-end using ZeRO-100B and Fig. 5 shows the validation perplexity over 300K iterations compared to previous SOTA, Megatron-LM 8.3B parameter model. ZeRO-100B achieves a sustained throughput of 41.4 TFlops/GPU for this model.",
+          "vec_score": 0.5743842720985413,
+          "rerank_score": 4.059257984161377
+        },
+        {
+          "rank": 4,
+          "chunk_id": "shoeybi-megatron-lm/6-conclusion-and-future-work/0103",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "6. Conclusion and Future Work"
+          ],
+          "start_page": 8,
+          "end_page": 8,
+          "text": "In this work, we successfully surpassed the limitations posed by traditional single-GPU-per-model training by implementing model parallelism with only a few modifications to the existing PyTorch transformer implementations. We efficiently trained transformer based models up to 8.3 billion parameter on 512 NVIDIA V100 GPUs with 8-way model parallelism and achieved up to 15.1 PetaFLOPs sustained over the entire application. We also showed that for BERT models, careful attention to the placement of layer normalization in BERT-like models is critical to achieving increased accuracies as the model size increases. We study the effect of model size on down-stream task accuracy and achieve far superior results on downstream tasks and establish new SOTA for WikiText103, LAMBADA, and RACE datasets.",
+          "vec_score": 0.6624119877815247,
+          "rerank_score": 3.573637008666992
+        },
+        {
+          "rank": 5,
+          "chunk_id": "rajbhandari-zero/10-2-speed-and-model-size/0157",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.2 Speed and Model Size"
+          ],
+          "start_page": 17,
+          "end_page": 17,
+          "text": "ZeRO-100B efficiently run models with up to 170B parameters on 400 GPUs, more than 8x bigger than Megatron-LM. Figure 2 shows throughput per GPU for varying model sizes using ZeRO-100B with MP versus using Megatron MP alone. ZeRO-100B achieves a sustained throughput of 15 PetaFlops (over 30% of the peak) on average for models with 8B to 100B parameters. In comparison, the baseline MP performance degrades quickly with the increase in model size: MP incurs high communication volume between GPUs, and going beyond a single node to fit larger models causes a communication bandwidth drop from 300GB/sec per link (NVSwitch) to 12.5 GB/sec per link (Infiniband EDR), resulting in a significant performance drop.",
+          "vec_score": 0.6556016206741333,
+          "rerank_score": 2.331556797027588
+        }
+      ]
+    },
+    {
+      "id": "megatron-first-gemm",
+      "retrieval_hit": true,
+      "query": "How does Megatron-LM partition the first GEMM in the MLP block?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.628649115562439,
+      "model": "deepseek-flash",
+      "answer": "Megatron-LM partitions the first GEMM in the MLP block in a column parallel fashion [1].",
+      "number_checks": [],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0049",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "This is advantageous as it removes a synchronization point. Hence, we partition the first GEMM in this column parallel fashion and split the second GEMM along its rows so it takes the output of the GeLU layer directly without requiring any communication as shown in Figure 3a. The output of the second GEMM is then reduced across the GPUs before passing the output to the dropout layer. This approach splits both GEMMs in the MLP block across GPUs and requires only a single all-reduce operation in the forward pass (g operator) and a single all-reduce in the backward pass (f operator). These two operators are conjugates of each other and can be implemented in PyTorch with only a few lines of code. As an example, the implementation of the f operator is provided below:",
+          "vec_score": 0.6184573173522949,
+          "rerank_score": 2.467456340789795
+        },
+        {
+          "rank": 2,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0042",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "We start by detailing the MLP block. The first part of the block is a GEMM followed by a GeLU nonlinearity:",
+          "vec_score": 0.628649115562439,
+          "rerank_score": 0.2425413876771927
+        },
+        {
+          "rank": 3,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0053",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "As shown in Figure 3b, for the self attention block we exploit inherent parallelism in the multihead attention operation, partitioning the GEMMs associated with key (K), query (Q), and value (V ) in a column parallel fashion such that the matrix multiply corresponding to each attention head is done locally on one GPU. This allows us to split per attention head parameters and workload across the GPUs, and doesnt require any immediate communication to complete the self-attention. The subsequent GEMM from the output linear layer (after self attention) is parallelized along its rows and takes the output of the parallel attention layer directly, without requiring communication between the GPUs.",
+          "vec_score": 0.5219227075576782,
+          "rerank_score": 0.04031688719987869
+        },
+        {
+          "rank": 4,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0010",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "Among different existing solution for training large models, MP is perhaps the most promising. The largest models in the current literature, the 11B T5 model [4], and Megatron-LM 8.3B [3], were both powered by model parallelism, implemented in Mesh-Tensorflow [5] and Megatron-LM[3], respectively. However, MP cannot scale much further beyond these models sizes. MP splits the model vertically, partitioning the computation and parameters in each layer across multiple devices, requiring significant communication between each layer. As a result, they work well within a single node where the inter-GPU communication bandwidth is high, but the efficiency degrades quickly beyond a single node [3].",
+          "vec_score": 0.5727797746658325,
+          "rerank_score": -0.6655082702636719
+        },
+        {
+          "rank": 5,
+          "chunk_id": "kwon-pagedattention/4-6-distributed-execution/0111",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "4.6 Distributed Execution"
+          ],
+          "start_page": 8,
+          "end_page": 9,
+          "text": "Many LLMs have parameter sizes exceeding the capacity of a single GPU [5, 9]. Therefore, it is necessary to partition them across distributed GPUs and execute them in a model parallel fashion [28, 63]. This calls for a memory manager capable of handling distributed memory. vLLM is effective in distributed settings by supporting the widely used Megatron-LM style tensor model parallelism strategy on Transformers [47]. This strategy adheres to an SPMD (Single Program Multiple Data) execution schedule, wherein the linear layers are partitioned to perform block-wise matrix multiplication, and the the GPUs constantly synchronize intermediate results via an allreduce operation.",
+          "vec_score": 0.5908521413803101,
+          "rerank_score": -1.4846619367599487
+        }
+      ]
+    },
+    {
+      "id": "megatron-two-all-reduces",
+      "retrieval_hit": true,
+      "query": "How many all-reduces does one Megatron-LM transformer layer use in the forward and backward pass?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.7245021462440491,
+      "model": "deepseek-flash",
+      "answer": "One Megatron-LM transformer layer uses 4 total communication operations in the forward and backward pass [4]. It performs two all-reduces in the forward path and two in the backward path [2].",
+      "number_checks": [
+        {
+          "number": "4",
+          "ranks": [
+            4,
+            2
+          ],
+          "found": true
+        }
+      ],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "rajbhandari-zero/8-communication-analysis-of-zero-r/0130",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "8 Communication Analysis of ZeRO-R"
+          ],
+          "start_page": 14,
+          "end_page": 14,
+          "text": "In Megatron-LM with activation checkpointing, each transformer block performs two allreduce operations of size batch \\times seq_length \\times hidden_dim in the forward propagation, two all-reduce for forward re-computation and two more in the backward propagation. The total communication per block is 12\\times seq\\_length\\times hidden\\_dim since communication volume of an all-reduce is 2 × message size.",
+          "vec_score": 0.7245021462440491,
+          "rerank_score": 6.160409927368164
+        },
+        {
+          "rank": 2,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0054",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "This approach for both the MLP and self attention layer fuses groups of two GEMMs, eliminates a synchronization point in between, and results in better scaling. This enables us to perform all GEMMs in a simple transformer layer using only two all-reduces in the forward path and two in the backward path (see Figure 4).",
+          "vec_score": 0.5854880809783936,
+          "rerank_score": 4.872010707855225
+        },
+        {
+          "rank": 3,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0049",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "This is advantageous as it removes a synchronization point. Hence, we partition the first GEMM in this column parallel fashion and split the second GEMM along its rows so it takes the output of the GeLU layer directly without requiring any communication as shown in Figure 3a. The output of the second GEMM is then reduced across the GPUs before passing the output to the dropout layer. This approach splits both GEMMs in the MLP block across GPUs and requires only a single all-reduce operation in the forward pass (g operator) and a single all-reduce in the backward pass (f operator). These two operators are conjugates of each other and can be implemented in PyTorch with only a few lines of code. As an example, the implementation of the f operator is provided below:",
+          "vec_score": 0.5433846116065979,
+          "rerank_score": 1.0541191101074219
+        },
+        {
+          "rank": 4,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0057",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 5,
+          "end_page": 5,
+          "text": "Figure 4. Communication operations in a transformer layer. There are 4 total communication operations in the forward and backward pass of a single model parallel transformer layer.",
+          "vec_score": 0.5431389212608337,
+          "rerank_score": 0.4270971715450287
+        },
+        {
+          "rank": 5,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0060",
+          "paper_id": "shoeybi-megatron-lm",
+          "sha256": "fa89e54e23c0cea5cbd9d24720db7647c61af299afdb9a170c7119160e6d207a",
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "start_page": 5,
+          "end_page": 5,
+          "text": "We present further details about the hybrid model and data parallelism and handling random number generation in Appendix B for reference. In summary, our approach as described above is simple to implement, requiring only a few extra all-reduce operations added to the forward and backward pass. It does not require a compiler, and is orthogonal and complementary to the pipeline model parallelism advocated by approaches such as (Huang et al., 2018).",
+          "vec_score": null,
+          "rerank_score": -0.606272280216217
+        }
+      ]
+    },
+    {
+      "id": "zero-name",
+      "retrieval_hit": true,
+      "query": "What does ZeRO stand for?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.5624403953552246,
+      "model": "deepseek-flash",
+      "answer": "Zero Redundancy Optimizer [1].",
+      "number_checks": [],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "rajbhandari-zero/abstract/0004",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "Large deep learning models offer significant accuracy gains, but training billions to trillions of parameters is challenging. Existing solutions such as data and model parallelisms exhibit fundamental limitations to fit these models into limited device memory, while obtaining computation, communication and development efficiency. We develop a novel solution, Zero Redundancy Optimizer (ZeRO), to optimize memory, vastly improving training speed while increasing the model size that can be efficiently trained. ZeRO eliminates memory redundancies in data- and model-parallel training while retaining low communication volume and high computational granularity, allowing us to scale the model size proportional to the number of devices with sustained high efficiency.",
+          "vec_score": 0.48817652463912964,
+          "rerank_score": 2.447185516357422
+        },
+        {
+          "rank": 2,
+          "chunk_id": "rajbhandari-zero/references/0214",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "start_page": 24,
+          "end_page": 24,
+          "text": "<table><tbody><tr><td colspan=\"9\">Figure 7</td></tr><tr><td>Model size</td><td>ZeRO/Baseline</td><td>Number of GPUs</td><td>MP</td><td>Layers</td><td>Hidden size</td><td>Attention head</td><td>Batch size</td><td>Total batch size</td></tr><tr><td>1.5B</td><td>ZeRO</td><td>128</td><td>1</td><td>34</td><td>1920</td><td>16</td><td>24</td><td>3072</td></tr><tr><td>2.5B</td><td>ZeRO</td><td>128</td><td>1</td><td>54</td><td>1920</td><td>16</td><td>24</td><td>3072</td></tr><tr><td>4B</td><td>ZeRO</td><td>128</td><td>1</td><td>64</td><td>2304</td><td>24</td><td>16</td><td>2048</td></tr><tr><td>6B</td><td>ZeRO</td><td>128</td><td>1</td><td>52</td><td>3072</td><td>24</td><td>12</td><td>1536</td></tr><tr><td>8B</td><td>ZeRO</td><td>128</td><td>1</td><td>72</td><td>3072</td><td>24</td><td>8</td><td>1024</td></tr><tr><td>10B</td><td>ZeRO</td><td>128</td><td>1</td><td>50</td><td>4096</td><td>32</td><td>6</td><td>768</td></tr><tr><td>11B</td><td>ZeRO</td><td>128</td><td>1</td><td>54</td><td>4096</td><td>32</td><td>4</td><td>512</td></tr><tr><td>12B</td><td>ZeRO</td><td>128</td><td>1</td><td>58</td><td>4096</td><td>32</td><td>4</td><td>512</td></tr><tr><td>13B</td><td>ZeRO</td><td>128</td><td>1</td><td>62</td><td>4096</td><td>32</td><td>2</td><td>256</td></tr><tr><td>1p16B</td><td>Baseline</td><td>128</td><td>1</td><td>24</td><td>1920</td><td>16</td><td>8</td><td>1024</td></tr><tr><td>1p38B</td><td>Baseline</td><td>128</td><td>1</td><td>40</td><td>1536</td><td>16</td><td>1</td><td>128</td></tr></tbody></table>\nTable 10: Model configurations for Figure 7 related to evaluating maximum model sizes vs throughput while using only data-parallelism.",
+          "vec_score": 0.4713592529296875,
+          "rerank_score": 0.415918231010437
+        },
+        {
+          "rank": 3,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0025",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "start_page": 3,
+          "end_page": 3,
+          "text": "ZeRO-DP and ZeRO-R combined together forms a powerful system of memory optimizations for DL training that we collectively refer to as ZeRO.",
+          "vec_score": 0.5624403953552246,
+          "rerank_score": 0.20000682771205902
+        },
+        {
+          "rank": 4,
+          "chunk_id": "rajbhandari-zero/references/0209",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "start_page": 23,
+          "end_page": 23,
+          "text": "Figure 2\n<table><tbody><tr><td colspan=\"9\">Figure 2</td></tr><tr><td>Model size</td><td>ZeRO/Baseline</td><td>Number of GPUs</td><td>MP</td><td>Layers</td><td>Hidden size</td><td>Attention head</td><td>Batch size</td><td>Total batch size</td></tr><tr><td>1.5B</td><td>ZeRO</td><td>400</td><td>1</td><td>48</td><td>1600</td><td>16</td><td>24</td><td>9600</td></tr><tr><td>1.5B</td><td>Baseline</td><td>400</td><td>2</td><td>48</td><td>1600</td><td>16</td><td>16</td><td>3200</td></tr><tr><td>8B</td><td>ZeRO</td><td>400</td><td>4</td><td>72</td><td>3072</td><td>24</td><td>64</td><td>6400</td></tr><tr><td>8B</td><td>Baseline</td><td>400</td><td>8</td><td>72</td><td>3072</td><td>24</td><td>8</td><td>400</td></tr><tr><td>40B</td><td>ZeRO</td><td>400</td><td>4</td><td>88</td><td>6144</td><td>32</td><td>12</td><td>1200</td></tr><tr><td>40B</td><td>Baseline</td><td>384</td><td>32</td><td>88</td><td>6144</td><td>64</td><td>4</td><td>48</td></tr><tr><td>60B</td><td>ZeRO</td><td>400</td><td>16</td><td>132</td><td>6144</td><td>32</td><td>64</td><td>1600</td></tr><tr><td>60B</td><td>Baseline</td><td>384</td><td>64</td><td>132</td><td>6144</td><td>64</td><td>4</td><td>24</td></tr><tr><td>80B</td><td>ZeRO</td><td>400</td><td>16</td><td>100</td><td>8192</td><td>64</td><td>32</td><td>800</td></tr><tr><td>80B</td><td>Baseline</td><td>384</td><td>128</td><td>100</td><td>8192</td><td>128</td><td>4</td><td>12</td></tr><tr><td>100B</td><td>ZeRO</td><td>400</td><td>16</td><td>125</td><td>8192</td><td>64</td><td>32</td><td>800</td></tr><tr><td>100B</td><td>Baseline</td><td>384</td><td>128</td><td>125</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>120B</td><td>ZeRO</td><td>400</td><td>16</td><td>150</td><td>8192</td><td>64</td><td>24</td><td>600</td></tr><tr><td>120B</td><td>Baseline</td><td>384</td><td>128</td><td>150</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>140B</td><td>ZeRO</td><td>400</td><td>16</td><td>175</td><td>8192</td><td>64</td><td>16</td><td>400</td></tr><tr><td>140B</td><td>Baseline</td><td>384</td><td>128</td><td>175</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>170B</td><td>ZeRO</td><td>400</td><td>16</td><td>212</td><td>8192</td><td>64</td><td>12</td><td>300</td></tr><tr><td>170B</td><td>Baseline</td><td>256</td><td>256</td><td>212</td><td>8192</td><td>256</td><td>2</td><td>2</td></tr></tbody></table>\nTable 5: Model configurations for Figure 2 related to ZeRO throughput compared with baseline.",
+          "vec_score": 0.48141640424728394,
+          "rerank_score": 0.19332171976566315
+        },
+        {
+          "rank": 5,
+          "chunk_id": "rajbhandari-zero/references/0213",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "start_page": 24,
+          "end_page": 24,
+          "text": "<table><tbody><tr><td colspan=\"9\">Figure 6</td></tr><tr><td>Model size</td><td>ZeRO/Baseline</td><td>Number of GPUs</td><td>MP</td><td>Layers</td><td>Hidden size</td><td>Attention head</td><td>Batch size</td><td>Total batch size</td></tr><tr><td>60B</td><td>ZeRO</td><td>128</td><td>16</td><td>75</td><td>8192</td><td>64</td><td>2</td><td>16</td></tr><tr><td>60B</td><td>ZeRO</td><td>128</td><td>16</td><td>75</td><td>8192</td><td>64</td><td>4</td><td>32</td></tr><tr><td>60B</td><td>ZeRO</td><td>128</td><td>16</td><td>75</td><td>8192</td><td>64</td><td>32</td><td>256</td></tr><tr><td>60B</td><td>ZeRO</td><td>128</td><td>16</td><td>75</td><td>8192</td><td>64</td><td>32</td><td>256</td></tr><tr><td>60B</td><td>ZeRO</td><td>128</td><td>16</td><td>75</td><td>8192</td><td>64</td><td>8</td><td>64</td></tr><tr><td>170B</td><td>ZeRO</td><td>400</td><td>16</td><td>212</td><td>8192</td><td>64</td><td>12</td><td>300</td></tr></tbody></table>\nTable 9: Model configurations for Figure 6 related to throughput with different ZeRO configurations.",
+          "vec_score": 0.4912872016429901,
+          "rerank_score": -0.14985992014408112
+        }
+      ]
+    },
+    {
+      "id": "zero-400-gpus",
+      "retrieval_hit": true,
+      "query": "What speedup does ZeRO report when training on 400 GPUs?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.7678390741348267,
+      "model": "deepseek-flash",
+      "answer": "ZeRO reports \"super-linear speedup on 400 GPUs\" [1]. It also observes \"super linear speedup in the regime of 64-400 GPUs\" [2].",
+      "number_checks": [
+        {
+          "number": "400",
+          "ranks": [
+            1
+          ],
+          "found": true
+        },
+        {
+          "number": "64",
+          "ranks": [],
+          "found": false
+        },
+        {
+          "number": "400",
+          "ranks": [
+            2
+          ],
+          "found": true
+        }
+      ],
+      "numbers_ok": false,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "rajbhandari-zero/abstract/0006",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "We implement and evaluate ZeRO: it trains large models of over 100B parameter with super-linear speedup on 400 GPUs, achieving throughput of 15 Petaflops. This represents an 8x increase in model size and 10x increase in achievable performance over state-of-the-art. In terms of usability, ZeRO can train large models of up to 13B parameters (e.g., larger than Megatron GPT 8.3B and T5 11B) without requiring model parallelism which is harder for scientists to apply. Last but not the least, researchers have used the system breakthroughs of ZeRO to create the world’s largest language model (17B parameters) with record breaking accuracy.",
+          "vec_score": 0.7077695727348328,
+          "rerank_score": 5.592934608459473
+        },
+        {
+          "rank": 2,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0035",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "start_page": 5,
+          "end_page": 5,
+          "text": "Scalability We observe super linear speedup in the regime of 64-400 GPUs, where the performance more than doubles when we double the number of GPUs. This is a property of ZeRO-DP which reduces the memory footprint of the model states as we increase the DP degree allowing us to fit larger batch sizes per GPU resulting in better performance. We expect this behaviour to continue further as we increase the number of GPUs beyond 400.",
+          "vec_score": 0.7308525443077087,
+          "rerank_score": 2.985670566558838
+        },
+        {
+          "rank": 3,
+          "chunk_id": "rajbhandari-zero/references/0209",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "start_page": 23,
+          "end_page": 23,
+          "text": "Figure 2\n<table><tbody><tr><td colspan=\"9\">Figure 2</td></tr><tr><td>Model size</td><td>ZeRO/Baseline</td><td>Number of GPUs</td><td>MP</td><td>Layers</td><td>Hidden size</td><td>Attention head</td><td>Batch size</td><td>Total batch size</td></tr><tr><td>1.5B</td><td>ZeRO</td><td>400</td><td>1</td><td>48</td><td>1600</td><td>16</td><td>24</td><td>9600</td></tr><tr><td>1.5B</td><td>Baseline</td><td>400</td><td>2</td><td>48</td><td>1600</td><td>16</td><td>16</td><td>3200</td></tr><tr><td>8B</td><td>ZeRO</td><td>400</td><td>4</td><td>72</td><td>3072</td><td>24</td><td>64</td><td>6400</td></tr><tr><td>8B</td><td>Baseline</td><td>400</td><td>8</td><td>72</td><td>3072</td><td>24</td><td>8</td><td>400</td></tr><tr><td>40B</td><td>ZeRO</td><td>400</td><td>4</td><td>88</td><td>6144</td><td>32</td><td>12</td><td>1200</td></tr><tr><td>40B</td><td>Baseline</td><td>384</td><td>32</td><td>88</td><td>6144</td><td>64</td><td>4</td><td>48</td></tr><tr><td>60B</td><td>ZeRO</td><td>400</td><td>16</td><td>132</td><td>6144</td><td>32</td><td>64</td><td>1600</td></tr><tr><td>60B</td><td>Baseline</td><td>384</td><td>64</td><td>132</td><td>6144</td><td>64</td><td>4</td><td>24</td></tr><tr><td>80B</td><td>ZeRO</td><td>400</td><td>16</td><td>100</td><td>8192</td><td>64</td><td>32</td><td>800</td></tr><tr><td>80B</td><td>Baseline</td><td>384</td><td>128</td><td>100</td><td>8192</td><td>128</td><td>4</td><td>12</td></tr><tr><td>100B</td><td>ZeRO</td><td>400</td><td>16</td><td>125</td><td>8192</td><td>64</td><td>32</td><td>800</td></tr><tr><td>100B</td><td>Baseline</td><td>384</td><td>128</td><td>125</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>120B</td><td>ZeRO</td><td>400</td><td>16</td><td>150</td><td>8192</td><td>64</td><td>24</td><td>600</td></tr><tr><td>120B</td><td>Baseline</td><td>384</td><td>128</td><td>150</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>140B</td><td>ZeRO</td><td>400</td><td>16</td><td>175</td><td>8192</td><td>64</td><td>16</td><td>400</td></tr><tr><td>140B</td><td>Baseline</td><td>384</td><td>128</td><td>175</td><td>8192</td><td>128</td><td>2</td><td>6</td></tr><tr><td>170B</td><td>ZeRO</td><td>400</td><td>16</td><td>212</td><td>8192</td><td>64</td><td>12</td><td>300</td></tr><tr><td>170B</td><td>Baseline</td><td>256</td><td>256</td><td>212</td><td>8192</td><td>256</td><td>2</td><td>2</td></tr></tbody></table>\nTable 5: Model configurations for Figure 2 related to ZeRO throughput compared with baseline.",
+          "vec_score": 0.6373242139816284,
+          "rerank_score": 2.126471996307373
+        },
+        {
+          "rank": 4,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0032",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "Speed Improved memory efficiency powers higher throughput and faster training. As shown in Figure 2, ZeRO runs 100B parameter models on a 400 Nvidia V100 GPU cluster with over",
+          "vec_score": 0.7678390741348267,
+          "rerank_score": 1.6954452991485596
+        },
+        {
+          "rank": 5,
+          "chunk_id": "rajbhandari-zero/10-2-speed-and-model-size/0157",
+          "paper_id": "rajbhandari-zero",
+          "sha256": "c531734c7d9ee647fda9b4f0e1a6abd6d58ad34e862bc945451b09032be3167e",
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.2 Speed and Model Size"
+          ],
+          "start_page": 17,
+          "end_page": 17,
+          "text": "ZeRO-100B efficiently run models with up to 170B parameters on 400 GPUs, more than 8x bigger than Megatron-LM. Figure 2 shows throughput per GPU for varying model sizes using ZeRO-100B with MP versus using Megatron MP alone. ZeRO-100B achieves a sustained throughput of 15 PetaFlops (over 30% of the peak) on average for models with 8B to 100B parameters. In comparison, the baseline MP performance degrades quickly with the increase in model size: MP incurs high communication volume between GPUs, and going beyond a single node to fit larger models causes a communication bandwidth drop from 300GB/sec per link (NVSwitch) to 12.5 GB/sec per link (Infiniband EDR), resulting in a significant performance drop.",
+          "vec_score": 0.6269489526748657,
+          "rerank_score": 1.635981559753418
+        }
+      ]
+    },
+    {
+      "id": "pagedattention-internal-fragmentation",
+      "retrieval_hit": true,
+      "query": "Why do existing systems in the PagedAttention paper suffer from internal fragmentation in the KV cache?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.734154224395752,
+      "model": "deepseek-flash",
+      "answer": "Existing systems pre-allocate a contiguous chunk of memory with the request’s maximum length (e.g., 2048 tokens) to store the KV cache of a request in contiguous space, which can result in severe internal fragmentation since the request’s actual length can be much shorter than its maximum length [1].",
+      "number_checks": [
+        {
+          "number": "2048",
+          "ranks": [
+            1
+          ],
+          "found": true
+        }
+      ],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "kwon-pagedattention/1-introduction/0016",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "First, the existing systems [31, 60] suffer from internal and external memory fragmentation. To store the KV cache of a request in contiguous space, they pre-allocate a contiguous chunk of memory with the request’s maximum length (e.g., 2048 tokens). This can result in severe internal fragmentation, since the request’s actual length can be much shorter than its maximum length (e.g., Fig. 11). Moreover, even if the actual length is known a priori, the pre-allocation is still inefficient: As the entire chunk is reserved during the request’s lifetime, other shorter requests cannot utilize any part of the chunk that is currently unused. Besides, external memory fragmentation can also be significant, since the pre-allocated size can be different for each request.",
+          "vec_score": 0.6829792261123657,
+          "rerank_score": 5.022530555725098
+        },
+        {
+          "rank": 2,
+          "chunk_id": "kwon-pagedattention/abstract/0005",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "High throughput serving of large language models (LLMs) requires batching sufficiently many requests at a time. However, existing systems struggle because the key-value cache (KV cache) memory for each request is huge and grows and shrinks dynamically. When managed inefficiently, this memory can be significantly wasted by fragmentation and redundant duplication, limiting the batch size. To address this problem, we propose PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems. On top of it, we build vLLM, an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage.",
+          "vec_score": 0.6608744859695435,
+          "rerank_score": 4.289462089538574
+        },
+        {
+          "rank": 3,
+          "chunk_id": "kwon-pagedattention/1-introduction/0019",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "To address the above limitations, we propose PagedAttention, an attention algorithm inspired by the operating system’s (OS) solution to memory fragmentation and sharing: virtual memory with paging. PagedAttention divides the request’s KV cache into blocks, each of which can contain the attention keys and values of a fixed number of tokens. In PagedAttention, the blocks for the KV cache are not necessarily stored in contiguous space. Therefore, we can manage the KV cache in a more flexible way as in OS’s virtual memory: one can think of blocks as pages, tokens as bytes, and requests as processes. This design alleviates internal fragmentation by using relatively small blocks and allocating them on demand. Moreover, it eliminates external fragmentation as all blocks have the same size.",
+          "vec_score": 0.734154224395752,
+          "rerank_score": 2.4176559448242188
+        },
+        {
+          "rank": 4,
+          "chunk_id": "kwon-pagedattention/1-introduction/0015",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "In this paper, we observe that existing LLM serving systems [31, 60] fall short of managing the KV cache memory efficiently. This is mainly because they store the KV cache of a request in contiguous memory space, as most deep learning frameworks [33, 39] require tensors to be stored in contiguous memory. However, unlike the tensors in the traditional deep learning workloads, the KV cache has unique characteristics: it dynamically grows and shrinks over time as the model generates new tokens, and its lifetime and length are not known a priori. These characteristics make the existing systems’ approach significantly inefficient in two ways:",
+          "vec_score": 0.6363997459411621,
+          "rerank_score": 1.312642216682434
+        },
+        {
+          "rank": 5,
+          "chunk_id": "kwon-pagedattention/2-3-batching-techniques-for-llms/0047",
+          "paper_id": "kwon-pagedattention",
+          "sha256": "55b3b324d779a67c59dac2519445e3b07c14e6ff5c656fadb47a3d7b5997469e",
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "2.3 Batching Techniques for LLMs"
+          ],
+          "start_page": 4,
+          "end_page": 4,
+          "text": "Figure 3. KV cache memory management in existing systems. Three types of memory wastes – reserved, internal fragmentation, and external fragmentation – exist that prevent other requests from fitting into the memory. The token in each memory slot represents its KV cache. Note the same tokens can have different KV cache when at different positions.",
+          "vec_score": 0.6385241150856018,
+          "rerank_score": 1.1725282669067383
+        }
+      ]
+    },
+    {
+      "id": "gpipe-micro-batches",
+      "retrieval_hit": true,
+      "query": "How does GPipe divide a mini-batch for the forward pass?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.7055422067642212,
+      "model": "deepseek-flash",
+      "answer": "GPipe first divides every mini-batch of size N into M equal micro-batches, which are pipelined through the K accelerators [1].",
+      "number_checks": [],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "huang-gpipe/2-2-algorithm/0024",
+          "paper_id": "huang-gpipe",
+          "sha256": "0fe89870d44301c760883413f2f30006891dbff5c3656bfc194ba66d7e36c52c",
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "2.2 Algorithm"
+          ],
+          "start_page": 3,
+          "end_page": 3,
+          "text": "During the forward pass, GPipe first divides every mini-batch of size N into M equal micro-batches, which are pipelined through the K accelerators. During the backward pass, gradients for each micro-batch are computed based on the same model parameters used for the forward pass. At the end of each mini-batch, gradients from all M micro-batches are accumulated and applied to update the model parameters across all accelerators. This sequence of operations is illustrated in Figure 2c.",
+          "vec_score": 0.7055422067642212,
+          "rerank_score": 6.616547584533691
+        },
+        {
+          "rank": 2,
+          "chunk_id": "huang-gpipe/1-introduction/0012",
+          "paper_id": "huang-gpipe",
+          "sha256": "0fe89870d44301c760883413f2f30006891dbff5c3656bfc194ba66d7e36c52c",
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "To address these challenges, we introduce GPipe, a flexible library that enables efficient training of large neural networks. GPipe allows scaling arbitrary deep neural network architectures beyond the memory limitations of a single accelerator by partitioning the model across different accelerators and supporting re-materialization on every accelerator [13, 14]. With GPipe, each model can be specified as a sequence of layers, and consecutive groups of layers can be partitioned into cells. Each cell is then placed on a separate accelerator. Based on this partitioned setup, we propose a novel pipeline parallelism algorithm with batch splitting. We first split a mini-batch of training examples into smaller micro-batches, then pipeline the execution of each set of micro-batches over cells.",
+          "vec_score": 0.6262322664260864,
+          "rerank_score": 1.6475176811218262
+        },
+        {
+          "rank": 3,
+          "chunk_id": "huang-gpipe/6-design-features-and-trade-offs/0069",
+          "paper_id": "huang-gpipe",
+          "sha256": "0fe89870d44301c760883413f2f30006891dbff5c3656bfc194ba66d7e36c52c",
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "6 Design Features and Trade-Offs"
+          ],
+          "start_page": 8,
+          "end_page": 8,
+          "text": "GPipe introduces a new brand of pipeline parallelism that pipelines the execution of micro-batches before applying a single synchronous gradient update for the entire mini-batch. Our novel batchsplitting pipeline parallelism algorithm, when combined with re-materialization, allows scaling to a large number of micro-batches. This minimizes the bubble overhead without the need for asynchronous gradient updates. GPipe enables the user to scale model size linearly with the number of accelerators used. Unlike SPMD, pipeline parallelism introduces little additional communication overhead when scaling the model.",
+          "vec_score": 0.6214003562927246,
+          "rerank_score": 1.4325268268585205
+        },
+        {
+          "rank": 4,
+          "chunk_id": "huang-gpipe/6-design-features-and-trade-offs/0070",
+          "paper_id": "huang-gpipe",
+          "sha256": "0fe89870d44301c760883413f2f30006891dbff5c3656bfc194ba66d7e36c52c",
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "6 Design Features and Trade-Offs"
+          ],
+          "start_page": 8,
+          "end_page": 8,
+          "text": "Inter-device communication only takes place at partition boundaries for every micro-batch and the introduced communication overhead is marginal, extending the utility of GPipe to situations where high-speed device interconnects are not available. However, GPipe currently assumes that a single layer fits within the memory requirements of a single accelerator3. Additionally, micro-batch splitting requires complicated strategies to support layers that require computations across the batch (for example, BatchNorm uses statistics over the micro-batch during training, but accumulates mini-batch statistics for evaluation).",
+          "vec_score": 0.6168228983879089,
+          "rerank_score": 0.9602723717689514
+        },
+        {
+          "rank": 5,
+          "chunk_id": "huang-gpipe/2-3-performance-optimization/0027",
+          "paper_id": "huang-gpipe",
+          "sha256": "0fe89870d44301c760883413f2f30006891dbff5c3656bfc194ba66d7e36c52c",
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "2.3 Performance Optimization"
+          ],
+          "start_page": 3,
+          "end_page": 3,
+          "text": "In order to reduce activation memory requirements, GPipe supports re-materialization [14]. During forward computation, each accelerator only stores output activations at the partition boundaries. During the backward pass, the k-th accelerator recomputes the composite forward function F_{k} . As a consequence, peak activation memory requirement is reduced to \\vec{O}(N + \\frac{L}{K} \\times \\frac{N}{M}) , where \\frac{N}{M} is the micro-batch size and \\frac{L}{K} is the number of layers per partition. In comparison, memory requirement without re-materialization and partitioning would be O(N\\times L) , since computing the gradients b_{i} requires both the upper layer gradients b_{i + 1} and the cached activations f_{i}(x)",
+          "vec_score": 0.5575018525123596,
+          "rerank_score": 0.12509013712406158
+        }
+      ]
+    },
+    {
+      "id": "medusa-head",
+      "retrieval_hit": false,
+      "query": "What is the architecture of each Medusa head?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.5586618185043335,
+      "model": "deepseek-flash",
+      "answer": "No passage is close enough to answer.",
+      "number_checks": [],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "cai-medusa/c-visualization-of-optimized-tree-attention/0208",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "C. Visualization of optimized tree attention"
+          ],
+          "start_page": 14,
+          "end_page": 14,
+          "text": "Fig. 6 illustrates the structure of a sparsely constructed tree for the MEDUSA-2 Vicuna-7B model. This tree structure extends four levels deep, indicating the engagement of four MEDUSA heads in the computation. The tree is initially formed through a Cartesian product approach and subsequently refined by pruning based on the statistical expectations of the top-k predictions from each MEDUSA head measured on the Alpaca-eval dataset (Dubois et al., 2023). The tree's lean towards the left visually represents the algorithm's preference for nodes with higher probabilities on each head.",
+          "vec_score": 0.5523862838745117,
+          "rerank_score": 2.008098602294922
+        },
+        {
+          "rank": 2,
+          "chunk_id": "cai-medusa/2-1-1-medusa-heads/0032",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.1.1. MEDUSA HEADS"
+          ],
+          "start_page": 3,
+          "end_page": 3,
+          "text": "Unlike a draft model, MEDUSA heads are trained in conjunction with the original backbone model, which can remain frozen during training (MEDUSA-1) or be trained together (MEDUSA-2). This method allows for fine-tuning large models even on a single GPU, taking advantage of the powerful base model's learned representations. Furthermore, it ensures that the distribution of the MEDUSA heads aligns with that of the original model, thereby mitigating the distribution shift problem. Additionally, since the new heads consist of just a single layer akin to the original language model head, MEDUSA does not add complexity to the serving system design and is friendly to distributed settings. We will discuss the training recipe for MEDUSA heads in Section 2.2.",
+          "vec_score": 0.5586618185043335,
+          "rerank_score": 0.5483041405677795
+        },
+        {
+          "rank": 3,
+          "chunk_id": "cai-medusa/a-1-llm-inference-acceleration/0193",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "A.1. LLM Inference Acceleration"
+          ],
+          "start_page": 13,
+          "end_page": 13,
+          "text": "Miao et al. (2023) employ multiple draft models to generate tokens and merge them using tree attention, while Spector & Re (2023) utilize a small draft model to process each level of the tree in batches. In contrast, our method directly uses the top predicted tokens from each of MEDUSA heads to create a static sparse tree without autoregression or adjusting the tree structure. This approach simplifies the process and improves efficiency. Additionally, we demonstrate through a detailed ablation study how the nodes of the tree can affect decoding speed.",
+          "vec_score": 0.48826414346694946,
+          "rerank_score": 0.2726794481277466
+        },
+        {
+          "rank": 4,
+          "chunk_id": "cai-medusa/1-introduction/0020",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "Figure 1. MEDUSA introduces multiple heads on top of the last hidden states of the LLM, enabling the prediction of several subsequent tokens in parallel (Section 2.1.1). During inference, each head generates multiple top predictions for its designated position. These predictions are assembled into candidates, which are processed in parallel using a tree-based attention mechanism (Section 2.1.2). The final step is to verify the candidates and accept a continuation. Besides the standard rejection sampling scheme, a typical acceptance scheme (Section 2.3.1) can also be used here to select reasonable continuations, and the longest accepted candidate prefix will be used for the next decoding phase.",
+          "vec_score": 0.5198894739151001,
+          "rerank_score": 0.24920913577079773
+        },
+        {
+          "rank": 5,
+          "chunk_id": "cai-medusa/d-results-of-speculative-decoding/0211",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "D. Results of Speculative Decoding"
+          ],
+          "start_page": 15,
+          "end_page": 15,
+          "text": "Figure 6. Visualization of a sparse tree setting for MEDUSA-2 Vicuna-7B. The tree has 64 nodes representing candidate tokens and a depth of 4 which indicates 4 MEDUSA heads involved in calculation. Each node indicates a token from a top-k prediction of a MEDUSA head, and the edges show the connections between them. The red lines highlight the path that correctly predicts the future tokens.",
+          "vec_score": 0.5264496803283691,
+          "rerank_score": -0.20521602034568787
+        }
+      ]
+    },
+    {
+      "id": "medusa-frozen-backbone",
+      "retrieval_hit": true,
+      "query": "What happens to the backbone LLM when MEDUSA-1 heads are fine-tuned?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.7108737230300903,
+      "model": "deepseek-flash",
+      "answer": "The backbone LLM remains frozen during MEDUSA-1 training [2], and MEDUSA is directly fine-tuned on top of a frozen backbone LLM [2]. MEDUSA-1 requires minimal memory and can be further optimized with quantization techniques akin to those in QLoRA, without compromising the generation quality due to the fixed backbone model [1].",
+      "number_checks": [
+        {
+          "number": "1",
+          "ranks": [
+            2
+          ],
+          "found": true
+        },
+        {
+          "number": "1",
+          "ranks": [
+            1
+          ],
+          "found": true
+        }
+      ],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "cai-medusa/1-introduction/0016",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "To equip LLMs with predictive MEDUSA heads, we propose two distinct fine-tuning procedures tailored to various scenarios. For situations with limited computational resources or when the objective is to incorporate MEDUSA into an existing model without affecting its performance, we recommend MEDUSA-1. This method requires minimal memory and can be further optimized with quantization techniques akin to those in QLoRA (Dettmers et al., 2023), without compromising the generation quality due to the fixed backbone model. However, in MEDUSA-1, the full potential of the backbone model is not utilized. We can further fine-tune it to enhance the prediction accuracy of MEDUSA heads, which can directly lead to a greater speedup.",
+          "vec_score": 0.7108737230300903,
+          "rerank_score": 3.5953903198242188
+        },
+        {
+          "rank": 2,
+          "chunk_id": "cai-medusa/abstract/0005",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "Using a tree-based attention mechanism, MEDUSA constructs multiple candidate continuations and verifies them simultaneously in each decoding step. By leveraging parallel processing, MEDUSA substantially reduces the number of decoding steps required. We present two levels of fine-tuning procedures for MEDUSA to meet the needs of different use cases: MEDUSA-1: MEDUSA is directly fine-tuned on top of a frozen backbone LLM, enabling lossless inference acceleration. MEDUSA-2: MEDUSA is fine-tuned together with the backbone LLM, enabling better prediction accuracy of MEDUSA heads and higher speedup but needing a special training recipe that preserves the model's capabilities.",
+          "vec_score": 0.7049260139465332,
+          "rerank_score": 3.4886679649353027
+        },
+        {
+          "rank": 3,
+          "chunk_id": "cai-medusa/2-1-1-medusa-heads/0032",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.1.1. MEDUSA HEADS"
+          ],
+          "start_page": 3,
+          "end_page": 3,
+          "text": "Unlike a draft model, MEDUSA heads are trained in conjunction with the original backbone model, which can remain frozen during training (MEDUSA-1) or be trained together (MEDUSA-2). This method allows for fine-tuning large models even on a single GPU, taking advantage of the powerful base model's learned representations. Furthermore, it ensures that the distribution of the MEDUSA heads aligns with that of the original model, thereby mitigating the distribution shift problem. Additionally, since the new heads consist of just a single layer akin to the original language model head, MEDUSA does not add complexity to the serving system design and is friendly to distributed settings. We will discuss the training recipe for MEDUSA heads in Section 2.2.",
+          "vec_score": 0.6402959823608398,
+          "rerank_score": 1.7791283130645752
+        },
+        {
+          "rank": 4,
+          "chunk_id": "cai-medusa/2-2-2-medusa-2-joint-training/0052",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.2.2. MEDUSA-2: JOINT TRAINING"
+          ],
+          "start_page": 5,
+          "end_page": 5,
+          "text": "- Heads warmup: Noticing that at the beginning of training, the MEDUSA heads have a large loss, which leads to a large gradient and may distort the backbone model's parameters. Following the idea from Kumar et al. (2022), we can employ a two-stage training process. In the first stage, we only train the MEDUSA heads as MEDUSA-1. In the second stage, we train the backbone model and MEDUSA heads together with a warmup strategy. Specifically, we first train the backbone model for a few epochs, then train the MEDUSA heads together with the backbone model. Besides this simple strategy, we can also use a more sophisticated warmup strategy by gradually increasing the weight \\lambda_0 of the backbone model's loss. We find both strategies work well in practice.",
+          "vec_score": 0.663718581199646,
+          "rerank_score": 1.2513422966003418
+        },
+        {
+          "rank": 5,
+          "chunk_id": "cai-medusa/1-introduction/0012",
+          "paper_id": "cai-medusa",
+          "sha256": "93d98f2e858c87ee04be440ee81ab8ad93700652ed759227d25fcf75cfdd5ef0",
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "start_page": 1,
+          "end_page": 2,
+          "text": "Instead of using a separate draft model to sequentially generate candidate outputs, in this paper, we revisit and re-fine the concept of using multiple decoding heads on top of the backbone model to expedite inference (Stern et al., 2018). We find that when applied effectively, this technique can overcome the challenges of speculative decoding, allowing for seamless integration into existing LLM systems. Specifically, we introduce MEDUSA, a method that enhances LLM inference by integrating additional decoding heads to concurrently predict multiple tokens. These heads are fine-tuned in a parameter-efficient manner and can be added to any existing model.",
+          "vec_score": 0.6172481775283813,
+          "rerank_score": 1.1223548650741577
+        }
+      ]
+    },
+    {
+      "id": "smoothquant-scaling",
+      "retrieval_hit": true,
+      "query": "What transformation does SmoothQuant use to move quantization difficulty from activations to weights?",
+      "refused": false,
+      "threshold": 0.25,
+      "vec_score_max": 0.7328938245773315,
+      "model": "deepseek-flash",
+      "answer": "SmoothQuant uses a mathematically equivalent per-channel scaling transformation that significantly smooths the magnitude across the channels [1]. It smooths the activation outliers by offline migrating the quantization difficulty from activations to weights with a mathematically equivalent transformation [2].",
+      "number_checks": [],
+      "numbers_ok": true,
+      "citations": [
+        {
+          "rank": 1,
+          "chunk_id": "xiao-smoothquant/1-introduction/0014",
+          "paper_id": "xiao-smoothquant",
+          "sha256": "d17856490ff664a99f8d08fe76eabd83219ed048cd1bc18ce3d0571e71056ff8",
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "We propose SmoothQuant, an accurate and efficient post-training quantization (PTQ) solution for LLMs. SmoothQuant relies on a key observation: even if activations are much harder to quantize than weights due to the presence of outliers (Dettmers et al., 2022), different tokens exhibit similar variations across their channels. Based on this observation, SmoothQuant offline migrates the quantization difficulty from activations to weights (Figure 2). SmoothQuant proposes a mathematically equivalent per-channel scaling transformation that significantly smooths the magnitude across the channels, making the model quantization-friendly.",
+          "vec_score": 0.7328938245773315,
+          "rerank_score": 6.2205705642700195
+        },
+        {
+          "rank": 2,
+          "chunk_id": "xiao-smoothquant/abstract/0004",
+          "paper_id": "xiao-smoothquant",
+          "sha256": "d17856490ff664a99f8d08fe76eabd83219ed048cd1bc18ce3d0571e71056ff8",
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "Large language models (LLMs) show excellent performance but are compute- and memoryintensive. Quantization can reduce memory and accelerate inference. However, existing methods cannot maintain accuracy and hardware efficiency at the same time. We propose SmoothQuant, a training-free, accuracy-preserving, and generalpurpose post-training quantization (PTQ) solution to enable 8-bit weight, 8-bit activation (W8A8) quantization for LLMs. Based on the fact that weights are easy to quantize while activations are not, SmoothQuant smooths the activation outliers by offline migrating the quantization difficulty from activations to weights with a mathematically equivalent transformation.",
+          "vec_score": 0.7314173579216003,
+          "rerank_score": 5.075338363647461
+        },
+        {
+          "rank": 3,
+          "chunk_id": "xiao-smoothquant/1-introduction/0013",
+          "paper_id": "xiao-smoothquant",
+          "sha256": "d17856490ff664a99f8d08fe76eabd83219ed048cd1bc18ce3d0571e71056ff8",
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "1 Introduction"
+          ],
+          "start_page": 2,
+          "end_page": 2,
+          "text": "(b) SmoothQuant\nFigure 2: SmoothQuant’s intuition: the activation X is hard to quantize because outliers stretch the quantization range, leaving few effective bits for most values. We migrate the scale variance from activations to weights W during offline to reduce the quantization difficulty of activations. The smoothed activation Xˆ and the adjusted weight Ŵ are both easy to quantize.",
+          "vec_score": 0.6693935394287109,
+          "rerank_score": 3.346884250640869
+        },
+        {
+          "rank": 4,
+          "chunk_id": "xiao-smoothquant/abstract/0005",
+          "paper_id": "xiao-smoothquant",
+          "sha256": "d17856490ff664a99f8d08fe76eabd83219ed048cd1bc18ce3d0571e71056ff8",
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "Abstract"
+          ],
+          "start_page": 1,
+          "end_page": 1,
+          "text": "SmoothQuant enables an INT8 quantization of both weights and activations for all the matrix multiplications in LLMs, including OPT, BLOOM, GLM, MT-NLG, Llama-1/2, Falcon, Mistral, and Mixtral models. We demonstrate up to 1.56× speedup and 2× memory reduction for LLMs with negligible loss in accuracy. SmoothQuant enables serving 530B LLM within a single node. Our work offers a turn-key solution that reduces hardware costs and democratizes LLMs.",
+          "vec_score": 0.6754697561264038,
+          "rerank_score": 3.210812568664551
+        },
+        {
+          "rank": 5,
+          "chunk_id": "xiao-smoothquant/4-smoothquant/0049",
+          "paper_id": "xiao-smoothquant",
+          "sha256": "d17856490ff664a99f8d08fe76eabd83219ed048cd1bc18ce3d0571e71056ff8",
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "4 SmoothQuant"
+          ],
+          "start_page": 5,
+          "end_page": 5,
+          "text": "Table 2: Quantization setting of the baselines and SmoothQuant. All weight and activations use INT8 representations unless specified. For SmoothQuant, the efficiency improves from O1 to O3 (i.e., lower latency).\n<table><tr><td>Method</td><td>Weight</td><td>Activation</td></tr><tr><td>W8A8</td><td>per-tensor</td><td>per-tensor dynamic</td></tr><tr><td>ZeroQuant</td><td>group-wise</td><td>per-token dynamic</td></tr><tr><td>LLM.int8()</td><td>per-channel</td><td>per-token dynamic+FP16</td></tr><tr><td>Outlier Suppression</td><td>per-tensor</td><td>per-tensor static</td></tr><tr><td>SmoothQuant-O1</td><td>per-tensor</td><td>per-token dynamic</td></tr><tr><td>SmoothQuant-O2</td><td>per-tensor</td><td>per-tensor dynamic</td></tr><tr><td>SmoothQuant-O3</td><td>per-tensor</td><td>per-tensor static</td></tr></table>",
+          "vec_score": 0.7139297723770142,
+          "rerank_score": 3.175691843032837
+        }
+      ]
+    }
+  ]
+}

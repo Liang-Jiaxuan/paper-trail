@@ -6,7 +6,7 @@
 
 这些字符串从 `data/chunks/` 的块文本里核对后原样抄入。2026-11-19 核对过 15 处。`tests/test_questions.py` 只检查形状：版本是 1、10 个不重复的 `id`、问句和证据非空、`chunk_id` 前缀、结束页不早于起始页。测试不打开块文件，也不跑检索。
 
-`python -m paper_trail.evaluation` 读取这份文件，全库重排后写入 `data/eval/retrieval.json`。它不写 `data/indexes/rerank/last_query.json`，也不写 `data/answers/last_answer.json`，也不调用概括模型。
+`python -m paper_trail.evaluation` 读取这份文件，全库重排后写入 `data/eval/retrieval.json`。它不写 `data/indexes/rerank/last_query.json`，也不写 `data/answers/last_answer.json`，也不调用概括模型。`python -m paper_trail.evaluation answers` 读 `retrieval.json`，按 `chunk_id` 从 `data/chunks/` 取回正文，再写 `data/eval/answers.json`。它不改 `retrieval.json` 和 `last_answer.json`。
 
 `megatron-15-1-petaflops` 的问句是 8.3 billion 参数、512 GPU 上的 PetaFLOPs，三处证据都是 `15.1 PetaFLOPs`：摘要第 1 页 `shoeybi-megatron-lm/abstract/0005`，引言第 1–2 页 `shoeybi-megatron-lm/1-introduction/0013`，结论第 8 页 `shoeybi-megatron-lm/6-conclusion-and-future-work/0103`。
 
@@ -131,6 +131,50 @@ bge-m3 只加载一次，编完 10 条问句后卸掉。bge-reranker-v2-m3 也�
 - 第 4 名 `xiao-smoothquant/abstract/0005`，第 1 页，`rerank_score` 3.210812568664551，`rrf_rank` 6，`rrf_score` 0.02854251012145749，BM25 名次 16，`bm25_score` 14.075159724705488，向量名次 5，`vec_score` 0.6754697561264038。`matched` 是空的。
 - 第 5 名 `xiao-smoothquant/4-smoothquant/0049`，第 5 页，`rerank_score` 3.175691843032837，`rrf_rank` 8，`rrf_score` 0.02736726874657909，BM25 名次 27，`bm25_score` 11.97251101006105，向量名次 3，`vec_score` 0.7139297723770142。`matched` 是空的。
 
+## 概括句
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m paper_trail.evaluation answers
+```
+
+未拒答的题各请求一次 `deepseek-flash`。拒答仍看这 5 条里最高的 `vec_score` 是否低于 0.25。密钥是 `DEEPSEEK_API_KEY`。数字检查和 `python -m paper_trail.generation` 是同一套。`numbers_ok` 只表示标出的段落里有这个数字原样，不表示概括句已经核对通过。
+
+2026-11-23 跑了这 10 题。`question_version` 是 1。10 题的 `refused` 都是 false，`model` 都是 `deepseek-flash`，`threshold` 都是 0.25。`vec_score_max` 从 `answers.json` 抄来：
+
+| id | retrieval_hit | vec_score_max | numbers_ok |
+| --- | --- | --- | --- |
+| `megatron-15-1-petaflops` | true | 0.6854450702667236 | true |
+| `megatron-first-gemm` | true | 0.628649115562439 | true |
+| `megatron-two-all-reduces` | true | 0.7245021462440491 | true |
+| `zero-name` | true | 0.5624403953552246 | true |
+| `zero-400-gpus` | true | 0.7678390741348267 | false |
+| `pagedattention-internal-fragmentation` | true | 0.734154224395752 | true |
+| `gpipe-micro-batches` | true | 0.7055422067642212 | true |
+| `medusa-head` | false | 0.5586618185043335 | true |
+| `medusa-frozen-backbone` | true | 0.7108737230300903 | true |
+| `smoothquant-scaling` | true | 0.7328938245773315 | true |
+
+`megatron-15-1-petaflops` 的 `answer` 是 `15.1 PetaFLOPs [1][2][4]`。`number_checks` 是 `15.1` 绑定名次 1、2、4，`found` 是 true。
+
+`megatron-first-gemm` 的 `answer` 是 `Megatron-LM partitions the first GEMM in the MLP block in a column parallel fashion [1].`。没有数字，`number_checks` 是 `[]`。
+
+`megatron-two-all-reduces` 的 `answer` 是 `One Megatron-LM transformer layer uses 4 total communication operations in the forward and backward pass [4]. It performs two all-reduces in the forward path and two in the backward path [2].`。数字 `4` 绑定名次 4 和 2，`found` 是 true。第 4 名 `0057` 里有 “4 total communication operations”。第 2 名 `0054` 里对上的是 “Figure 4”，不是 all-reduce 的次数。
+
+`zero-name` 的 `answer` 是 `Zero Redundancy Optimizer [1].`。没有数字。
+
+`zero-400-gpus` 的 `answer` 是 `ZeRO reports "super-linear speedup on 400 GPUs" [1]. It also observes "super linear speedup in the regime of 64-400 GPUs" [2].`。`400` 绑定名次 1，`found` 是 true。后面的 `64` 没有名次，`found` 是 false。再后面的 `400` 绑定名次 2，`found` 是 true。`64-400` 被拆成两个数字，夹在中间的 `64` 赶在下一个数字之前，没有 `[n]`。
+
+`pagedattention-internal-fragmentation` 的 `answer` 是 `Existing systems pre-allocate a contiguous chunk of memory with the request’s maximum length (e.g., 2048 tokens) to store the KV cache of a request in contiguous space, which can result in severe internal fragmentation since the request’s actual length can be much shorter than its maximum length [1].`。数字 `2048` 绑定名次 1，`found` 是 true。
+
+`gpipe-micro-batches` 的 `answer` 是 `GPipe first divides every mini-batch of size N into M equal micro-batches, which are pipelined through the K accelerators [1].`。没有数字。
+
+`medusa-head` 的 `retrieval_hit` 是 false，证据块不在前 5 条里。`vec_score_max` 仍高于 0.25，所以请求了模型。`answer` 是 `No passage is close enough to answer.`。`refused` 仍是 false。没有数字。
+
+`medusa-frozen-backbone` 的 `answer` 是 `The backbone LLM remains frozen during MEDUSA-1 training [2], and MEDUSA is directly fine-tuned on top of a frozen backbone LLM [2]. MEDUSA-1 requires minimal memory and can be further optimized with quantization techniques akin to those in QLoRA, without compromising the generation quality due to the fixed backbone model [1].`。两处数字都是 `1`。第一处绑定名次 2，第二处绑定名次 1，`found` 都是 true。对上的是段落里的 `MEDUSA-1`。
+
+`smoothquant-scaling` 的 `answer` 是 `SmoothQuant uses a mathematically equivalent per-channel scaling transformation that significantly smooths the magnitude across the channels [1]. It smooths the activation outliers by offline migrating the quantization difficulty from activations to weights with a mathematically equivalent transformation [2].`。没有数字。
+
 ## 还没做
 
-- 还没有调用概括模型，也没有把 RAGAS 接进来。
+- 还没有把 RAGAS 接进来。

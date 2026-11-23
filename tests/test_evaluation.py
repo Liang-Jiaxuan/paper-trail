@@ -2,7 +2,9 @@
 
 import unittest
 
+from paper_trail.evaluation.answers import prepare_answer
 from paper_trail.evaluation.retrieval import question_result, retrieval_payload
+from paper_trail.generation.answer import REFUSAL_ANSWER
 
 
 def hit(**overrides) -> dict:
@@ -81,3 +83,48 @@ class ChunkIdHitTest(unittest.TestCase):
         self.assertEqual(payload["candidate_k"], 50)
         self.assertEqual(payload["top_k"], 5)
         self.assertIsNone(payload["paper_ids"])
+
+
+class PrepareAnswerTest(unittest.TestCase):
+    def test_text_comes_from_the_matching_chunk_and_a_low_score_refuses(self):
+        question = {
+            "id": "example",
+            "query": "Where?",
+            "hit": True,
+            "hits": [hit(vec_score=0.2)],
+        }
+        chunks = {
+            "shoeybi-megatron-lm/abstract/0005": {
+                "sha256": "abc",
+                "text": "15.1 PetaFLOPs",
+            }
+        }
+        answer = prepare_answer(question, chunks)
+        self.assertEqual(answer["id"], "example")
+        self.assertTrue(answer["retrieval_hit"])
+        self.assertTrue(answer["refused"])
+        self.assertEqual(answer["answer"], REFUSAL_ANSWER)
+        self.assertIsNone(answer["model"])
+        self.assertEqual(answer["threshold"], 0.25)
+        self.assertEqual(answer["vec_score_max"], 0.2)
+        self.assertEqual(answer["citations"][0]["text"], "15.1 PetaFLOPs")
+        self.assertEqual(answer["citations"][0]["sha256"], "abc")
+        self.assertNotIn("bm25_score", answer["citations"][0])
+
+    def test_score_at_the_threshold_does_not_refuse(self):
+        question = {
+            "id": "example",
+            "query": "Where?",
+            "hit": False,
+            "hits": [hit(vec_score=0.25)],
+        }
+        chunks = {"shoeybi-megatron-lm/abstract/0005": {"sha256": "abc", "text": "kept"}}
+        answer = prepare_answer(question, chunks)
+        self.assertFalse(answer["refused"])
+        self.assertIsNone(answer["answer"])
+        self.assertFalse(answer["retrieval_hit"])
+
+    def test_missing_chunk_is_rejected(self):
+        question = {"id": "example", "query": "Where?", "hit": False, "hits": [hit()]}
+        with self.assertRaises(KeyError):
+            prepare_answer(question, {})
