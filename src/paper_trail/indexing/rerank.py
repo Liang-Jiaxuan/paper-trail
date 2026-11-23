@@ -68,22 +68,28 @@ def decide_refusal(hits: list[dict], threshold: float = VEC_SCORE_THRESHOLD) -> 
     return {"threshold": threshold, "vec_score_max": score, "refused": score < threshold}
 
 
-def score_pairs(query: str, hits: list[dict], model_dir: Path) -> list[float]:
-    """一次加载模型，对全部候选打出分类 logit。"""
+def load_reranker(model_dir: Path):
+    """加载一次 bge-reranker-v2-m3。输出是分类 logit。"""
     import torch.nn as nn
     from sentence_transformers import CrossEncoder
 
     if not model_dir.is_dir():
         raise FileNotFoundError(f"找不到重排模型：{model_dir}")
-    model = CrossEncoder(
+    return CrossEncoder(
         str(model_dir),
         num_labels=1,
         max_length=MAX_LENGTH,
         activation_fn=nn.Identity(),
         local_files_only=True,
     )
+
+
+def score_pairs(query: str, hits: list[dict], model_dir: Path, model=None) -> list[float]:
+    """对全部候选打出分类 logit。传入 model 时不再加载。没有候选时不加载模型。"""
     pairs = [(query, hit["text"]) for hit in hits]
     if not pairs:
         return []
+    if model is None:
+        model = load_reranker(model_dir)
     raw = model.predict(pairs, batch_size=BATCH_SIZE, show_progress_bar=False)
     return [float(score) for score in np.asarray(raw, dtype=np.float64).reshape(-1)]

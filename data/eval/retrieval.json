@@ -1,0 +1,1057 @@
+{
+  "question_version": 1,
+  "candidate_k": 50,
+  "top_k": 5,
+  "paper_ids": null,
+  "rrf_k": 60,
+  "model": "BAAI/bge-reranker-v2-m3",
+  "max_length": 8192,
+  "hit_count": 9,
+  "question_count": 10,
+  "questions": [
+    {
+      "id": "megatron-15-1-petaflops",
+      "query": "How many PetaFLOPs does Megatron-LM sustain for the 8.3 billion parameter model on 512 GPUs?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 1,
+          "chunk_id": "shoeybi-megatron-lm/abstract/0005",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "Abstract"
+          ],
+          "bm25_score": 27.26429443073144,
+          "bm25_rank": 1,
+          "vec_score": 0.6789646148681641,
+          "vec_rank": 3,
+          "rrf_score": 0.032266458495966696,
+          "rerank_score": 5.594396591186523,
+          "matched": [
+            "shoeybi-megatron-lm/abstract/0005"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 3,
+          "chunk_id": "shoeybi-megatron-lm/1-introduction/0013",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 1,
+          "end_page": 2,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "1. Introduction"
+          ],
+          "bm25_score": 21.34842597569422,
+          "bm25_rank": 5,
+          "vec_score": 0.6854450702667236,
+          "vec_rank": 1,
+          "rrf_score": 0.03177805800756621,
+          "rerank_score": 5.538087844848633,
+          "matched": [
+            "shoeybi-megatron-lm/1-introduction/0013"
+          ]
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 17,
+          "chunk_id": "rajbhandari-zero/10-6-turing-nlg-the-sota-language-model-with-17b-parameters/0176",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 19,
+          "end_page": 19,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.6 Turing-NLG, the SOTA language model with 17B parameters"
+          ],
+          "bm25_score": 14.903788988428989,
+          "bm25_rank": 19,
+          "vec_score": 0.5743842720985413,
+          "vec_rank": 27,
+          "rrf_score": 0.024152480721664482,
+          "rerank_score": 4.059257984161377,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 4,
+          "chunk_id": "shoeybi-megatron-lm/6-conclusion-and-future-work/0103",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 8,
+          "end_page": 8,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "6. Conclusion and Future Work"
+          ],
+          "bm25_score": 20.797482740713235,
+          "bm25_rank": 7,
+          "vec_score": 0.6624119877815247,
+          "vec_rank": 5,
+          "rrf_score": 0.030309988518943745,
+          "rerank_score": 3.573637008666992,
+          "matched": [
+            "shoeybi-megatron-lm/6-conclusion-and-future-work/0103"
+          ]
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 8,
+          "chunk_id": "rajbhandari-zero/10-2-speed-and-model-size/0157",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 17,
+          "end_page": 17,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.2 Speed and Model Size"
+          ],
+          "bm25_score": 17.084148868663643,
+          "bm25_rank": 13,
+          "vec_score": 0.6556016206741333,
+          "vec_rank": 7,
+          "rrf_score": 0.02862400327131466,
+          "rerank_score": 2.331556797027588,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "megatron-first-gemm",
+      "query": "How does Megatron-LM partition the first GEMM in the MLP block?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 2,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0049",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 18.625983988786384,
+          "bm25_rank": 2,
+          "vec_score": 0.6184573173522949,
+          "vec_rank": 2,
+          "rrf_score": 0.03225806451612903,
+          "rerank_score": 2.467456340789795,
+          "matched": [
+            "shoeybi-megatron-lm/3-model-parallel-transformers/0049"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 1,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0042",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 25.36886808277289,
+          "bm25_rank": 1,
+          "vec_score": 0.628649115562439,
+          "vec_rank": 1,
+          "rrf_score": 0.03278688524590164,
+          "rerank_score": 0.2425413876771927,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 17,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0053",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 8.914132748899249,
+          "bm25_rank": 40,
+          "vec_score": 0.5219227075576782,
+          "vec_rank": 11,
+          "rrf_score": 0.02408450704225352,
+          "rerank_score": 0.04031688719987869,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 7,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0010",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "bm25_score": 11.869791446312314,
+          "bm25_rank": 14,
+          "vec_score": 0.5727797746658325,
+          "vec_rank": 6,
+          "rrf_score": 0.028665028665028666,
+          "rerank_score": -0.6655082702636719,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 4,
+          "chunk_id": "kwon-pagedattention/4-6-distributed-execution/0111",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 8,
+          "end_page": 9,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "4.6 Distributed Execution"
+          ],
+          "bm25_score": 13.930563430533088,
+          "bm25_rank": 4,
+          "vec_score": 0.5908521413803101,
+          "vec_rank": 4,
+          "rrf_score": 0.03125,
+          "rerank_score": -1.4846619367599487,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "megatron-two-all-reduces",
+      "query": "How many all-reduces does one Megatron-LM transformer layer use in the forward and backward pass?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 1,
+          "chunk_id": "rajbhandari-zero/8-communication-analysis-of-zero-r/0130",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 14,
+          "end_page": 14,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "8 Communication Analysis of ZeRO-R"
+          ],
+          "bm25_score": 24.161714979418473,
+          "bm25_rank": 4,
+          "vec_score": 0.7245021462440491,
+          "vec_rank": 1,
+          "rrf_score": 0.032018442622950824,
+          "rerank_score": 6.160409927368164,
+          "matched": []
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 2,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0054",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 25.298249139268247,
+          "bm25_rank": 3,
+          "vec_score": 0.5854880809783936,
+          "vec_rank": 2,
+          "rrf_score": 0.03200204813108039,
+          "rerank_score": 4.872010707855225,
+          "matched": [
+            "shoeybi-megatron-lm/3-model-parallel-transformers/0054"
+          ]
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 6,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0049",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 17.555153563859264,
+          "bm25_rank": 10,
+          "vec_score": 0.5433846116065979,
+          "vec_rank": 5,
+          "rrf_score": 0.02967032967032967,
+          "rerank_score": 1.0541191101074219,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 3,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0057",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 5,
+          "end_page": 5,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 28.545947353017382,
+          "bm25_rank": 2,
+          "vec_score": 0.5431389212608337,
+          "vec_rank": 6,
+          "rrf_score": 0.03128054740957967,
+          "rerank_score": 0.4270971715450287,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 23,
+          "chunk_id": "shoeybi-megatron-lm/3-model-parallel-transformers/0060",
+          "paper_id": "shoeybi-megatron-lm",
+          "start_page": 5,
+          "end_page": 5,
+          "section_path": [
+            "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+            "3. Model Parallel Transformers"
+          ],
+          "bm25_score": 18.983672797222965,
+          "bm25_rank": 6,
+          "vec_score": null,
+          "vec_rank": null,
+          "rrf_score": 0.015151515151515152,
+          "rerank_score": -0.606272280216217,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "zero-name",
+      "query": "What does ZeRO stand for?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 49,
+          "chunk_id": "rajbhandari-zero/abstract/0004",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "Abstract"
+          ],
+          "bm25_score": null,
+          "bm25_rank": null,
+          "vec_score": 0.48817652463912964,
+          "vec_rank": 28,
+          "rrf_score": 0.011363636363636364,
+          "rerank_score": 2.447185516357422,
+          "matched": [
+            "rajbhandari-zero/abstract/0004"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 72,
+          "chunk_id": "rajbhandari-zero/references/0214",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 24,
+          "end_page": 24,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "bm25_score": null,
+          "bm25_rank": null,
+          "vec_score": 0.4713592529296875,
+          "vec_rank": 49,
+          "rrf_score": 0.009174311926605505,
+          "rerank_score": 0.415918231010437,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 2,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0025",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 3,
+          "end_page": 3,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "bm25_score": 6.038967629992551,
+          "bm25_rank": 10,
+          "vec_score": 0.5624403953552246,
+          "vec_rank": 2,
+          "rrf_score": 0.0304147465437788,
+          "rerank_score": 0.20000682771205902,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 58,
+          "chunk_id": "rajbhandari-zero/references/0209",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 23,
+          "end_page": 23,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "bm25_score": null,
+          "bm25_rank": null,
+          "vec_score": 0.48141640424728394,
+          "vec_rank": 38,
+          "rrf_score": 0.01020408163265306,
+          "rerank_score": 0.19332171976566315,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 21,
+          "chunk_id": "rajbhandari-zero/references/0213",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 24,
+          "end_page": 24,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "bm25_score": 4.113512367953967,
+          "bm25_rank": 39,
+          "vec_score": 0.4912872016429901,
+          "vec_rank": 23,
+          "rrf_score": 0.022149202872094438,
+          "rerank_score": -0.14985992014408112,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "zero-400-gpus",
+      "query": "What speedup does ZeRO report when training on 400 GPUs?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 3,
+          "chunk_id": "rajbhandari-zero/abstract/0006",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "Abstract"
+          ],
+          "bm25_score": 11.698900306607623,
+          "bm25_rank": 7,
+          "vec_score": 0.7077695727348328,
+          "vec_rank": 4,
+          "rrf_score": 0.03055037313432836,
+          "rerank_score": 5.592934608459473,
+          "matched": [
+            "rajbhandari-zero/abstract/0006"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 1,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0035",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 5,
+          "end_page": 5,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "bm25_score": 16.99802788352117,
+          "bm25_rank": 1,
+          "vec_score": 0.7308525443077087,
+          "vec_rank": 2,
+          "rrf_score": 0.03252247488101534,
+          "rerank_score": 2.985670566558838,
+          "matched": [
+            "rajbhandari-zero/1-extended-introduction/0035"
+          ]
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 15,
+          "chunk_id": "rajbhandari-zero/references/0209",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 23,
+          "end_page": 23,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "References"
+          ],
+          "bm25_score": 9.292850316932817,
+          "bm25_rank": 20,
+          "vec_score": 0.6373242139816284,
+          "vec_rank": 16,
+          "rrf_score": 0.025657894736842105,
+          "rerank_score": 2.126471996307373,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 2,
+          "chunk_id": "rajbhandari-zero/1-extended-introduction/0032",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "1 Extended Introduction"
+          ],
+          "bm25_score": 13.005376457582155,
+          "bm25_rank": 3,
+          "vec_score": 0.7678390741348267,
+          "vec_rank": 1,
+          "rrf_score": 0.032266458495966696,
+          "rerank_score": 1.6954452991485596,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 14,
+          "chunk_id": "rajbhandari-zero/10-2-speed-and-model-size/0157",
+          "paper_id": "rajbhandari-zero",
+          "start_page": 17,
+          "end_page": 17,
+          "section_path": [
+            "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+            "10.2 Speed and Model Size"
+          ],
+          "bm25_score": 10.38035359239905,
+          "bm25_rank": 13,
+          "vec_score": 0.6269489526748657,
+          "vec_rank": 23,
+          "rrf_score": 0.02574682290807064,
+          "rerank_score": 1.635981559753418,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "pagedattention-internal-fragmentation",
+      "query": "Why do existing systems in the PagedAttention paper suffer from internal fragmentation in the KV cache?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 2,
+          "chunk_id": "kwon-pagedattention/1-introduction/0016",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "bm25_score": 27.2317801124377,
+          "bm25_rank": 2,
+          "vec_score": 0.6829792261123657,
+          "vec_rank": 2,
+          "rrf_score": 0.03225806451612903,
+          "rerank_score": 5.022530555725098,
+          "matched": [
+            "kwon-pagedattention/1-introduction/0016"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 3,
+          "chunk_id": "kwon-pagedattention/abstract/0005",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "Abstract"
+          ],
+          "bm25_score": 22.295490627465135,
+          "bm25_rank": 5,
+          "vec_score": 0.6608744859695435,
+          "vec_rank": 4,
+          "rrf_score": 0.031009615384615385,
+          "rerank_score": 4.289462089538574,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 1,
+          "chunk_id": "kwon-pagedattention/1-introduction/0019",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "bm25_score": 25.326840651947165,
+          "bm25_rank": 3,
+          "vec_score": 0.734154224395752,
+          "vec_rank": 1,
+          "rrf_score": 0.032266458495966696,
+          "rerank_score": 2.4176559448242188,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 5,
+          "chunk_id": "kwon-pagedattention/1-introduction/0015",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "1 Introduction"
+          ],
+          "bm25_score": 23.442538317072955,
+          "bm25_rank": 4,
+          "vec_score": 0.6363997459411621,
+          "vec_rank": 10,
+          "rrf_score": 0.029910714285714284,
+          "rerank_score": 1.312642216682434,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 4,
+          "chunk_id": "kwon-pagedattention/2-3-batching-techniques-for-llms/0047",
+          "paper_id": "kwon-pagedattention",
+          "start_page": 4,
+          "end_page": 4,
+          "section_path": [
+            "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+            "2.3 Batching Techniques for LLMs"
+          ],
+          "bm25_score": 34.17692157784275,
+          "bm25_rank": 1,
+          "vec_score": 0.6385241150856018,
+          "vec_rank": 9,
+          "rrf_score": 0.030886196246139225,
+          "rerank_score": 1.1725282669067383,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "gpipe-micro-batches",
+      "query": "How does GPipe divide a mini-batch for the forward pass?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 1,
+          "chunk_id": "huang-gpipe/2-2-algorithm/0024",
+          "paper_id": "huang-gpipe",
+          "start_page": 3,
+          "end_page": 3,
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "2.2 Algorithm"
+          ],
+          "bm25_score": 26.04888506348862,
+          "bm25_rank": 1,
+          "vec_score": 0.7055422067642212,
+          "vec_rank": 1,
+          "rrf_score": 0.03278688524590164,
+          "rerank_score": 6.616547584533691,
+          "matched": [
+            "huang-gpipe/2-2-algorithm/0024"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 5,
+          "chunk_id": "huang-gpipe/1-introduction/0012",
+          "paper_id": "huang-gpipe",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "1 Introduction"
+          ],
+          "bm25_score": 12.394695915047123,
+          "bm25_rank": 10,
+          "vec_score": 0.6262322664260864,
+          "vec_rank": 2,
+          "rrf_score": 0.0304147465437788,
+          "rerank_score": 1.6475176811218262,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 4,
+          "chunk_id": "huang-gpipe/6-design-features-and-trade-offs/0069",
+          "paper_id": "huang-gpipe",
+          "start_page": 8,
+          "end_page": 8,
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "6 Design Features and Trade-Offs"
+          ],
+          "bm25_score": 13.519665096517866,
+          "bm25_rank": 5,
+          "vec_score": 0.6214003562927246,
+          "vec_rank": 3,
+          "rrf_score": 0.03125763125763126,
+          "rerank_score": 1.4325268268585205,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 3,
+          "chunk_id": "huang-gpipe/6-design-features-and-trade-offs/0070",
+          "paper_id": "huang-gpipe",
+          "start_page": 8,
+          "end_page": 8,
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "6 Design Features and Trade-Offs"
+          ],
+          "bm25_score": 15.886037585959286,
+          "bm25_rank": 3,
+          "vec_score": 0.6168228983879089,
+          "vec_rank": 4,
+          "rrf_score": 0.03149801587301587,
+          "rerank_score": 0.9602723717689514,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 6,
+          "chunk_id": "huang-gpipe/2-3-performance-optimization/0027",
+          "paper_id": "huang-gpipe",
+          "start_page": 3,
+          "end_page": 3,
+          "section_path": [
+            "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism",
+            "2.3 Performance Optimization"
+          ],
+          "bm25_score": 12.442168898451612,
+          "bm25_rank": 9,
+          "vec_score": 0.5575018525123596,
+          "vec_rank": 14,
+          "rrf_score": 0.028006267136701922,
+          "rerank_score": 0.12509013712406158,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "medusa-head",
+      "query": "What is the architecture of each Medusa head?",
+      "hit": false,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 1,
+          "chunk_id": "cai-medusa/c-visualization-of-optimized-tree-attention/0208",
+          "paper_id": "cai-medusa",
+          "start_page": 14,
+          "end_page": 14,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "C. Visualization of optimized tree attention"
+          ],
+          "bm25_score": 14.082938370578905,
+          "bm25_rank": 1,
+          "vec_score": 0.5523862838745117,
+          "vec_rank": 3,
+          "rrf_score": 0.032266458495966696,
+          "rerank_score": 2.008098602294922,
+          "matched": []
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 4,
+          "chunk_id": "cai-medusa/2-1-1-medusa-heads/0032",
+          "paper_id": "cai-medusa",
+          "start_page": 3,
+          "end_page": 3,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.1.1. MEDUSA HEADS"
+          ],
+          "bm25_score": 9.881836984653773,
+          "bm25_rank": 11,
+          "vec_score": 0.5586618185043335,
+          "vec_rank": 2,
+          "rrf_score": 0.03021353930031804,
+          "rerank_score": 0.5483041405677795,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 18,
+          "chunk_id": "cai-medusa/a-1-llm-inference-acceleration/0193",
+          "paper_id": "cai-medusa",
+          "start_page": 13,
+          "end_page": 13,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "A.1. LLM Inference Acceleration"
+          ],
+          "bm25_score": 7.248893465194364,
+          "bm25_rank": 47,
+          "vec_score": 0.48826414346694946,
+          "vec_rank": 32,
+          "rrf_score": 0.02021535960991467,
+          "rerank_score": 0.2726794481277466,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 9,
+          "chunk_id": "cai-medusa/1-introduction/0020",
+          "paper_id": "cai-medusa",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "bm25_score": 8.988787690948326,
+          "bm25_rank": 19,
+          "vec_score": 0.5198894739151001,
+          "vec_rank": 9,
+          "rrf_score": 0.02715098147128967,
+          "rerank_score": 0.24920913577079773,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 2,
+          "chunk_id": "cai-medusa/d-results-of-speculative-decoding/0211",
+          "paper_id": "cai-medusa",
+          "start_page": 15,
+          "end_page": 15,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "D. Results of Speculative Decoding"
+          ],
+          "bm25_score": 11.95519620012154,
+          "bm25_rank": 5,
+          "vec_score": 0.5264496803283691,
+          "vec_rank": 7,
+          "rrf_score": 0.030309988518943745,
+          "rerank_score": -0.20521602034568787,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "medusa-frozen-backbone",
+      "query": "What happens to the backbone LLM when MEDUSA-1 heads are fine-tuned?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 2,
+          "chunk_id": "cai-medusa/1-introduction/0016",
+          "paper_id": "cai-medusa",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "bm25_score": 21.741200757015893,
+          "bm25_rank": 3,
+          "vec_score": 0.7108737230300903,
+          "vec_rank": 1,
+          "rrf_score": 0.032266458495966696,
+          "rerank_score": 3.5953903198242188,
+          "matched": []
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 1,
+          "chunk_id": "cai-medusa/abstract/0005",
+          "paper_id": "cai-medusa",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "Abstract"
+          ],
+          "bm25_score": 27.639701129039725,
+          "bm25_rank": 1,
+          "vec_score": 0.7049260139465332,
+          "vec_rank": 2,
+          "rrf_score": 0.03252247488101534,
+          "rerank_score": 3.4886679649353027,
+          "matched": [
+            "cai-medusa/abstract/0005"
+          ]
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 4,
+          "chunk_id": "cai-medusa/2-1-1-medusa-heads/0032",
+          "paper_id": "cai-medusa",
+          "start_page": 3,
+          "end_page": 3,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.1.1. MEDUSA HEADS"
+          ],
+          "bm25_score": 18.358952423821016,
+          "bm25_rank": 8,
+          "vec_score": 0.6402959823608398,
+          "vec_rank": 4,
+          "rrf_score": 0.030330882352941176,
+          "rerank_score": 1.7791283130645752,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 6,
+          "chunk_id": "cai-medusa/2-2-2-medusa-2-joint-training/0052",
+          "paper_id": "cai-medusa",
+          "start_page": 5,
+          "end_page": 5,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "2.2.2. MEDUSA-2: JOINT TRAINING"
+          ],
+          "bm25_score": 17.860552502918576,
+          "bm25_rank": 10,
+          "vec_score": 0.663718581199646,
+          "vec_rank": 3,
+          "rrf_score": 0.030158730158730156,
+          "rerank_score": 1.2513422966003418,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 3,
+          "chunk_id": "cai-medusa/1-introduction/0012",
+          "paper_id": "cai-medusa",
+          "start_page": 1,
+          "end_page": 2,
+          "section_path": [
+            "MEDUSA: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads",
+            "1. Introduction"
+          ],
+          "bm25_score": 24.812717670788523,
+          "bm25_rank": 2,
+          "vec_score": 0.6172481775283813,
+          "vec_rank": 9,
+          "rrf_score": 0.030621785881252923,
+          "rerank_score": 1.1223548650741577,
+          "matched": []
+        }
+      ]
+    },
+    {
+      "id": "smoothquant-scaling",
+      "query": "What transformation does SmoothQuant use to move quantization difficulty from activations to weights?",
+      "hit": true,
+      "hits": [
+        {
+          "rank": 1,
+          "rrf_rank": 1,
+          "chunk_id": "xiao-smoothquant/1-introduction/0014",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "1 Introduction"
+          ],
+          "bm25_score": 29.50145267486939,
+          "bm25_rank": 1,
+          "vec_score": 0.7328938245773315,
+          "vec_rank": 1,
+          "rrf_score": 0.03278688524590164,
+          "rerank_score": 6.2205705642700195,
+          "matched": [
+            "xiao-smoothquant/1-introduction/0014"
+          ]
+        },
+        {
+          "rank": 2,
+          "rrf_rank": 2,
+          "chunk_id": "xiao-smoothquant/abstract/0004",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "Abstract"
+          ],
+          "bm25_score": 27.625907734428573,
+          "bm25_rank": 2,
+          "vec_score": 0.7314173579216003,
+          "vec_rank": 2,
+          "rrf_score": 0.03225806451612903,
+          "rerank_score": 5.075338363647461,
+          "matched": []
+        },
+        {
+          "rank": 3,
+          "rrf_rank": 3,
+          "chunk_id": "xiao-smoothquant/1-introduction/0013",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 2,
+          "end_page": 2,
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "1 Introduction"
+          ],
+          "bm25_score": 25.851115092384628,
+          "bm25_rank": 3,
+          "vec_score": 0.6693935394287109,
+          "vec_rank": 6,
+          "rrf_score": 0.031024531024531024,
+          "rerank_score": 3.346884250640869,
+          "matched": []
+        },
+        {
+          "rank": 4,
+          "rrf_rank": 6,
+          "chunk_id": "xiao-smoothquant/abstract/0005",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 1,
+          "end_page": 1,
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "Abstract"
+          ],
+          "bm25_score": 14.075159724705488,
+          "bm25_rank": 16,
+          "vec_score": 0.6754697561264038,
+          "vec_rank": 5,
+          "rrf_score": 0.02854251012145749,
+          "rerank_score": 3.210812568664551,
+          "matched": []
+        },
+        {
+          "rank": 5,
+          "rrf_rank": 8,
+          "chunk_id": "xiao-smoothquant/4-smoothquant/0049",
+          "paper_id": "xiao-smoothquant",
+          "start_page": 5,
+          "end_page": 5,
+          "section_path": [
+            "SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models",
+            "4 SmoothQuant"
+          ],
+          "bm25_score": 11.97251101006105,
+          "bm25_rank": 27,
+          "vec_score": 0.7139297723770142,
+          "vec_rank": 3,
+          "rrf_score": 0.02736726874657909,
+          "rerank_score": 3.175691843032837,
+          "matched": []
+        }
+      ]
+    }
+  ]
+}

@@ -51,13 +51,19 @@ def search_vectors(
     return hits
 
 
-def embed_texts(texts: list[str], model_dir: Path, batch_size: int = BATCH_SIZE) -> np.ndarray:
-    """用本地 bge-m3 编出归一化的稠密向量。"""
+def load_embedder(model_dir: Path):
+    """加载一次本地 bge-m3。"""
     from sentence_transformers import SentenceTransformer
 
     if not model_dir.is_dir():
         raise FileNotFoundError(f"找不到嵌入模型：{model_dir}")
-    model = SentenceTransformer(str(model_dir))
+    return SentenceTransformer(str(model_dir))
+
+
+def embed_texts(texts: list[str], model_dir: Path, batch_size: int = BATCH_SIZE, model=None) -> np.ndarray:
+    """用本地 bge-m3 编出归一化的稠密向量。传入 model 时不再加载。"""
+    if model is None:
+        model = load_embedder(model_dir)
     encoded = model.encode(
         texts,
         batch_size=batch_size,
