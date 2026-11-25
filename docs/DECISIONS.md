@@ -1,6 +1,6 @@
 # 设计决策
 
-本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。引用记录见 [GENERATION.md](GENERATION.md)。评测题见 [EVAL.md](EVAL.md)。
+本文件只记关键设计决策。阶段性成果的说明写在单独的文档里。解析见 [PARSING.md](PARSING.md)，分块见 [CHUNKING.md](CHUNKING.md)，BM25、稠密向量、RRF、重排和拒答阈值见 [INDEXING.md](INDEXING.md)。引用记录见 [GENERATION.md](GENERATION.md)。评测题见 [EVAL.md](EVAL.md)。还没做的方向见 [NEXT.md](NEXT.md)。
 
 ## 语料主题
 
