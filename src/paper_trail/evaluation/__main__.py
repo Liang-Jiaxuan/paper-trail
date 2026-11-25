@@ -1,7 +1,8 @@
-"""对评测题跑重排，或按已有重排结果写概括句。
+"""对评测题跑重排，按已有重排结果写概括句，或用 ragas 给概括句打分。
 
 python -m paper_trail.evaluation
 python -m paper_trail.evaluation answers
+python -m paper_trail.evaluation ragas
 """
 
 import gc
@@ -11,6 +12,7 @@ import sys
 
 from paper_trail import config
 from paper_trail.evaluation.answers import chunks_by_id, prepare_answer
+from paper_trail.evaluation.ragas_eval import write_ragas
 from paper_trail.evaluation.retrieval import question_result, retrieval_payload
 from paper_trail.generation.answer import attach_number_checks, attach_summary, prompt_messages, request_summary
 from paper_trail.indexing.bm25 import load_index, search
@@ -57,13 +59,21 @@ def _write_answers() -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
-    """无参数时重排。answers 时写概括句。"""
+    """无参数时重排。answers 时写概括句。ragas 时给已有概括句打分。"""
     args = list(sys.argv[1:] if argv is None else argv)
     if args == ["answers"]:
         _write_answers()
         return
+    if args == ["ragas"]:
+        write_ragas()
+        return
     if args:
-        raise SystemExit("用法:\n  python -m paper_trail.evaluation\n  python -m paper_trail.evaluation answers")
+        raise SystemExit(
+            "用法:\n"
+            "  python -m paper_trail.evaluation\n"
+            "  python -m paper_trail.evaluation answers\n"
+            "  python -m paper_trail.evaluation ragas"
+        )
     if not config.QUESTIONS_PATH.is_file():
         raise SystemExit(f"找不到评测题：{config.QUESTIONS_PATH}")
     if not config.BM25_INDEX_PATH.is_file():

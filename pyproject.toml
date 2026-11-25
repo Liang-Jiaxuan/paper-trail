@@ -11,6 +11,7 @@ dependencies = [
     "mineru>=4.0,<5",
     "numpy",
     "openai",
+    "ragas==0.4.4",
     "sentence-transformers>=3,<6",
     "torch>=2.6",
 ]

@@ -80,11 +80,15 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 一道题可以有多处出处。每一处必须在那一块的 `text` 里原样含有它的 `evidence`。转述、要看图才能回答、或块里对不上这串字的说法，不写成题。检索命中看 `chunk_id`：前 5 条里出现某一处证据的 `chunk_id`，这道题算命中。同一页上的其他块不算。2026-11-19 的重排按这个规则重算后，10 题里 9 题命中。概括句沿用 `deepseek-flash` 和同一套数字检查，另写在 `data/eval/answers.json`，不改 `last_answer.json`。2026-11-23 这 10 题的最高向量分都高于 0.25，所以都请求了模型。见 [EVAL.md](EVAL.md)。
 
+## 概括句用 ragas 0.4.4 打分
+
+打 Faithfulness、Answer Relevancy、Context Precision 和 Context Recall。后两项的参考答案是该题不重复的 `evidence`。评判模型是 `deepseek-v4-pro`，温度为 0，关闭思考模式。相关性向量是本地 bge-m3。DeepSeek 在 2026-09-10 公布的多方测试里 V4.1-Flash 超过了 V4-Pro，所以评判模型 `deepseek-v4-pro` 并没有比 `deepseek-flash` 更强。2026-11-25 这 10 题的平均分别是 0.8、0.7031301228706631、0.9033333332917917 和 0.9，四项都是 10 题有分。见 [EVAL.md](EVAL.md)。
+
 ## 包与环境
 
 - 包名 `paper_trail`，`src` 布局。
 - conda 环境 `paper-trail`，Python 3.12，见 `environment.yml`。
-- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`、`numpy`、`openai`、`sentence-transformers` 和 `torch`。
+- 依赖随阶段加入 `pyproject.toml`。当前是 `mineru`、`numpy`、`openai`、`ragas==0.4.4`、`sentence-transformers` 和 `torch`。
 
 ## 实现约束
 
@@ -108,4 +112,3 @@ BM25 和稠密向量在查询时融合，不另建一份索引。每一路默认
 
 - 命令行、评测脚本和服务接口共用一个配置对象和同一条执行链路。
 - 消融实验与主链路使用同一个分词器。
-- 评测保存原始回答、检索候选和分数，并写明当次配置。

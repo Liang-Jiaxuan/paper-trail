@@ -8,7 +8,7 @@
 
 ## 当前状态
 
-早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页。2026-11-06 用这份 middle JSON 又对照了这 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。分块读这份 middle JSON，规则见 [docs/CHUNKING.md](docs/CHUNKING.md)。BM25、bge-m3 稠密向量、RRF 融合、重排、拒答标记和按论文过滤见 [docs/INDEXING.md](docs/INDEXING.md)。引用、英文概括句和数字归属见 [docs/GENERATION.md](docs/GENERATION.md)。10 道评测题的重排和概括句见 [docs/EVAL.md](docs/EVAL.md)。按证据块的 `chunk_id`，10 题里 9 题命中。10 题都请求了概括模型。
+早期阶段。论文清单已经有了。解析导出 B0 那 6 篇的 MinerU middle JSON。选型时 PyMuPDF 和 MinerU 各对照了其中抽检的 4 页。2026-11-06 用这份 middle JSON 又对照了这 4 页，结论见 [docs/PARSING.md](docs/PARSING.md)。分块读这份 middle JSON，规则见 [docs/CHUNKING.md](docs/CHUNKING.md)。BM25、bge-m3 稠密向量、RRF 融合、重排、拒答标记和按论文过滤见 [docs/INDEXING.md](docs/INDEXING.md)。引用、英文概括句和数字归属见 [docs/GENERATION.md](docs/GENERATION.md)。10 道评测题的重排和概括句见 [docs/EVAL.md](docs/EVAL.md)。按证据块的 `chunk_id`，10 题里 9 题命中。10 题都请求了概括模型。ragas 0.4.4 对这 10 句打了 Faithfulness、Answer Relevancy、Context Precision 和 Context Recall，平均分别是 0.8、0.7031301228706631、0.9033333332917917 和 0.9。评判模型是 `deepseek-v4-pro`，向量是本地 bge-m3。
 
 ## 计划
 

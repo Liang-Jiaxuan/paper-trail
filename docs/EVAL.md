@@ -175,6 +175,30 @@ python -m paper_trail.evaluation answers
 
 `smoothquant-scaling` 的 `answer` 是 `SmoothQuant uses a mathematically equivalent per-channel scaling transformation that significantly smooths the magnitude across the channels [1]. It smooths the activation outliers by offline migrating the quantization difficulty from activations to weights with a mathematically equivalent transformation [2].`。没有数字。
 
-## 还没做
+## RAGAS
 
-- 还没有把 RAGAS 接进来。
+```powershell
+$env:PYTHONPATH = "src"
+python -m paper_trail.evaluation ragas
+```
+
+读 `data/eval/answers.json` 和 `data/eval/questions.json`，不改这两份文件，也不改 `retrieval.json` 和 `last_answer.json`。用 ragas 0.4.4 的 Faithfulness、Answer Relevancy、Context Precision 和 Context Recall。评判模型是 `deepseek-v4-pro`，温度 0，`top_p` 0.1，`max_tokens` 1024，思考关闭。Answer Relevancy 反推 3 个问题，向量用本地 bge-m3。引用按名次送出整段原文。Context Precision 和 Context Recall 的参考答案是该题 `evidence` 里不重复的字符串，按出处顺序用换行接起来。10 题里只有 `zero-400-gpus` 是两句。密钥是 `DEEPSEEK_API_KEY`。再跑一次会再请求评判模型。
+
+DeepSeek 在 2026-09-10 写过，多方测试里 V4.1-Flash 的效果超过 V4-Pro。评判模型并没有比写概括句的 `deepseek-flash` 更强。
+
+库在抽不出陈述时给出的分数是 NaN，文件里写成 null，不填 0 或 1，平均分只算有数字的题。2026-11-25 这 10 题四项都有数字。`faithfulness_mean` 是 0.8，`answer_relevancy_mean` 是 0.7031301228706631，`context_precision_mean` 是 0.9033333332917917，`context_recall_mean` 是 0.9。四项的 count 都是 10。原始结果在 `data/eval/ragas.json`。
+
+| id | faithfulness | answer_relevancy | context_precision | context_recall |
+| --- | --- | --- | --- | --- |
+| `megatron-15-1-petaflops` | 1.0 | 0.5294315344044075 | 0.9166666666361111 | 1.0 |
+| `megatron-first-gemm` | 0.0 | 0.9999999999997584 | 0.9999999999 | 1.0 |
+| `megatron-two-all-reduces` | 1.0 | 0.8773423043122635 | 0.9166666666361111 | 1.0 |
+| `zero-name` | 1.0 | 0.5436297579009476 | 0.8333333332916666 | 1.0 |
+| `zero-400-gpus` | 1.0 | 0.9548145800436486 | 0.99999999995 | 1.0 |
+| `pagedattention-internal-fragmentation` | 1.0 | 0.6763315309170621 | 0.94999999997625 | 1.0 |
+| `gpipe-micro-batches` | 1.0 | 0.8626017580771981 | 0.9166666666361111 | 1.0 |
+| `medusa-head` | 0.0 | 0.0 | 0.49999999995 | 0.0 |
+| `medusa-frozen-backbone` | 1.0 | 0.8565088712111066 | 0.999999999975 | 1.0 |
+| `smoothquant-scaling` | 1.0 | 0.7306408918402395 | 0.9999999999666667 | 1.0 |
+
+`megatron-first-gemm` 的 Faithfulness 是 0.0。`medusa-head` 的回答是 `No passage is close enough to answer.`，Faithfulness 和 Answer Relevancy 都是 0.0，Context Recall 也是 0.0，Context Precision 是 0.49999999995。其余 8 题的 Faithfulness 是 1.0，其余 9 题的 Context Recall 是 1.0。

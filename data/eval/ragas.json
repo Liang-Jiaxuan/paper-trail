@@ -1,0 +1,91 @@
+{
+  "question_version": 1,
+  "ragas_version": "0.4.4",
+  "judge_model": "deepseek-v4-pro",
+  "embedding_model": "BAAI/bge-m3",
+  "temperature": 0,
+  "top_p": 0.1,
+  "max_tokens": 1024,
+  "thinking": "disabled",
+  "strictness": 3,
+  "faithfulness_mean": 0.8,
+  "faithfulness_count": 10,
+  "answer_relevancy_mean": 0.7031301228706631,
+  "answer_relevancy_count": 10,
+  "context_precision_mean": 0.9033333332917917,
+  "context_precision_count": 10,
+  "context_recall_mean": 0.9,
+  "context_recall_count": 10,
+  "questions": [
+    {
+      "id": "megatron-15-1-petaflops",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5294315344044075,
+      "context_precision": 0.9166666666361111,
+      "context_recall": 1.0
+    },
+    {
+      "id": "megatron-first-gemm",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.9999999999997584,
+      "context_precision": 0.9999999999,
+      "context_recall": 1.0
+    },
+    {
+      "id": "megatron-two-all-reduces",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8773423043122635,
+      "context_precision": 0.9166666666361111,
+      "context_recall": 1.0
+    },
+    {
+      "id": "zero-name",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.5436297579009476,
+      "context_precision": 0.8333333332916666,
+      "context_recall": 1.0
+    },
+    {
+      "id": "zero-400-gpus",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9548145800436486,
+      "context_precision": 0.99999999995,
+      "context_recall": 1.0
+    },
+    {
+      "id": "pagedattention-internal-fragmentation",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.6763315309170621,
+      "context_precision": 0.94999999997625,
+      "context_recall": 1.0
+    },
+    {
+      "id": "gpipe-micro-batches",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8626017580771981,
+      "context_precision": 0.9166666666361111,
+      "context_recall": 1.0
+    },
+    {
+      "id": "medusa-head",
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.0,
+      "context_precision": 0.49999999995,
+      "context_recall": 0.0
+    },
+    {
+      "id": "medusa-frozen-backbone",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8565088712111066,
+      "context_precision": 0.999999999975,
+      "context_recall": 1.0
+    },
+    {
+      "id": "smoothquant-scaling",
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7306408918402395,
+      "context_precision": 0.9999999999666667,
+      "context_recall": 1.0
+    }
+  ]
+}
